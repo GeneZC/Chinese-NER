@@ -1,21 +1,20 @@
 # -*- coding:utf-8 -*-
 # author: GeneZC
 
-import optparse
 import itertools
-from collections import OrderedDict
 import loader
 import torch
 import time
 import pickle
-from torch.autograd import Variable
 import matplotlib.pyplot as plt
 import sys
 import visdom
-from utils import *
-from loader import *
+from torch.autograd import Variable
+from collections import OrderedDict
 from model import BiLSTM_CRF
 from config import Config
+from utils import *
+from loader import *
 
 class Trainpipeline():
     def __init__(self, opts):
@@ -36,22 +35,13 @@ class Trainpipeline():
         self.parameters['all_emb'] = opts.all_emb
         self.parameters['crf'] = opts.use_crf
         self.parameters['dropout'] = opts.dropout
-        self.parameters['name'] = 'ner'
-        self.parameters['char_mode'] = 'CNN'
+        self.parameters['name'] = opts.name
+        self.parameters['char_mode'] = opts.char_mode
+        self.learning_rate = opts.lr
         self.use_gpu = torch.cuda.is_available()
-        self.mapping_file = 'models/mapping.pkl'
-        self.model_name = models_path + 'ner'  # get_name(self.parameters)
+        self.mapping_file = mapping_path
+        self.model_name = models_path + self.parameters['name']  # get_name(self.parameters)
         self.tmp_model = self.model_name + '.tmp'
-
-        assert os.path.isfile(opts.train)
-        assert os.path.isfile(opts.dev)
-        assert os.path.isfile(opts.test)
-        assert self.parameters['char_dim'] > 0 or self.parameters['word_dim'] > 0
-        assert 0. <= self.parameters['dropout'] < 1.0
-        assert self.parameters['tag_scheme'] in ['iob', 'iobes']
-        assert not self.parameters['all_emb'] or self.parameters['pre_emb']
-        assert not self.parameters['pre_emb'] or self.parameters['word_dim'] > 0
-        assert not self.parameters['pre_emb'] or os.path.isfile(self.parameters['pre_emb'])
 
         if not os.path.isfile(eval_script):
             raise Exception('CoNLL evaluation script not found at "%s"' % eval_script)
@@ -61,21 +51,20 @@ class Trainpipeline():
             os.makedirs(models_path)
 
     def load(self):
-        lower = self.parameters['lower']
         zeros = self.parameters['zeros']
         tag_scheme = self.parameters['tag_scheme']
 
-        train_sentences = loader.load_sentences(self.train_path, lower, zeros)
-        dev_sentences = loader.load_sentences(self.dev_path, lower, zeros)
-        test_sentences = loader.load_sentences(self.test_path, lower, zeros)
-        test_train_sentences = loader.load_sentences(self.test_train_path, lower, zeros)
+        train_sentences = loader.load_sentences(self.train_path, zeros)
+        dev_sentences = loader.load_sentences(self.dev_path, zeros)
+        test_sentences = loader.load_sentences(self.test_path, zeros)
+        test_train_sentences = loader.load_sentences(self.test_train_path, zeros)
 
         update_tag_scheme(train_sentences, tag_scheme)
         update_tag_scheme(dev_sentences, tag_scheme)
         update_tag_scheme(test_sentences, tag_scheme)
         update_tag_scheme(test_train_sentences, tag_scheme)
 
-        dico_words_train = word_mapping(train_sentences, lower)[0]
+        dico_words_train = word_mapping(train_sentences)[0]
 
         dico_words, word_to_id, id_to_word = augment_with_pretrained(
             dico_words_train.copy(),
@@ -140,15 +129,14 @@ class Trainpipeline():
                            pre_word_embeds=word_embeds,
                            use_crf=self.parameters['crf'],
                            char_mode=self.parameters['char_mode'])
-        # n_cap=4,
-        # cap_embedding_dim=10)
+
         try:
             self.model.load_state_dict(torch.load(self.model_name))
         except:
             print("No model available!!!")
+
         if self.use_gpu:
             self.model.cuda()
-        self.learning_rate = 0.002
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.train_data = train_data
         self.dev_data = dev_data

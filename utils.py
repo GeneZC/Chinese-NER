@@ -3,9 +3,9 @@ import os
 import re
 import numpy as np
 
-
-models_path = "./models"
-eval_path = "./evaluation"
+mapping_path = 'models/mapping.pkl'
+models_path = "./models/"
+eval_path = "./evaluation/"
 eval_temp = os.path.join(eval_path, "temp")
 eval_script = os.path.join(eval_path, "conlleval")
 
