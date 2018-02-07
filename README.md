@@ -1,4 +1,5 @@
 ## Chinese-NER
+An attempt to do better on Chinese NER task.
 ## Reference & Inspiration
 - [Neural Architectures for Named Entity Recognition](https://arxiv.org/pdf/1603.01360.pdf)
   > - with pretrained word2vec embedding
@@ -18,4 +19,6 @@
   > - Bi-LSTM or CNN(CNN is better) (do a segmentation operation to yield input)
   > - concat above two
   > - CRF loss layer
+- [NER-pytorch](https://github.com/ZhixiuYe/NER-pytorch)
+  > - a pytorch version implementation which is similar to the very beginning one
   
