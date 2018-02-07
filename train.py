@@ -1,14 +1,13 @@
 # -*- coding:utf-8 -*-
 # author: GeneZC
 
-from __future__ import print_function
 import optparse
 import itertools
 from collections import OrderedDict
 import loader
 import torch
 import time
-import cPickle
+import pickle
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
 import sys
@@ -21,16 +20,16 @@ from model import BiLSTM_CRF
 def create_parser():
     optparser = optparse.OptionParser()
     optparser.add_option(
-        "-T", "--train", default="dataset/eng.train",
-        help="Train set location"
+        "--train", default="dataset/eng.train",
+        help="train set location"
     )
     optparser.add_option(
-        "-d", "--dev", default="dataset/eng.testa",
-        help="Dev set location"
+        "--dev", default="dataset/eng.testa",
+        help="dev set location"
     )
     optparser.add_option(
-        "-t", "--test", default="dataset/eng.testb",
-        help="Test set location"
+        "--test", default="dataset/eng.testb",
+        help="test set location"
     )
     optparser.add_option(
         '--test_train', default='dataset/eng.train54019',
@@ -41,20 +40,16 @@ def create_parser():
         help='score file location'
     )
     optparser.add_option(
-        "-s", "--tag_scheme", default="iobes",
-        help="Tagging scheme (IOB or IOBES)"
+        "--tag_scheme", default="iobes",
+        help="tagging scheme (IOB or IOBES)"
     )
     optparser.add_option(
-        "-l", "--lower", default="1",
-        type='int', help="Lowercase words (this will not affect character inputs)"
+        "--zeros", default="0",
+        type='int', help="replace digits with 0"
     )
     optparser.add_option(
-        "-z", "--zeros", default="0",
-        type='int', help="Replace digits with 0"
-    )
-    optparser.add_option(
-        "-c", "--char_dim", default="25",
-        type='int', help="Char embedding dimension"
+        "--char_dim", default="25",
+        type='int', help="char embedding dimension"
     )
     optparser.add_option(
         "-C", "--char_lstm_dim", default="25",
@@ -160,7 +155,7 @@ class Trainpipeline():
         if not os.path.exists(models_path):
             os.makedirs(models_path)
 
-    def load(self, ):
+    def load(self):
         lower = self.parameters['lower']
         zeros = self.parameters['zeros']
         tag_scheme = self.parameters['tag_scheme']
@@ -228,7 +223,7 @@ class Trainpipeline():
                 'self.parameters': self.parameters,
                 'word_embeds': word_embeds
             }
-            cPickle.dump(mappings, f)
+            pickle.dump(mappings, f)
 
         print('word_to_id: ', len(word_to_id))
         self.model = BiLSTM_CRF(vocab_size=len(word_to_id),
@@ -266,7 +261,7 @@ class Trainpipeline():
         count = 0
         vis = visdom.Visdom()
         sys.stdout.flush()
-         t = time.time()
+        t = time.time()
         self.model.train(True)
         for epoch in range(1, 10001):
             for i, index in enumerate(np.random.permutation(len(self.train_data))):
