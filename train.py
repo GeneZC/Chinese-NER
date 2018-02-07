@@ -20,24 +20,23 @@ from config import Config
 class Trainpipeline():
     def __init__(self, opts):
         self.parameters = OrderedDict()
-        self.train_path = opts.train
-        self.dev_path = opts.dev
-        self.test_path = opts.test
-        self.test_train_path = opts.test_train
+        self.train_path = opts.train_path
+        self.dev_path = opts.dev_path
+        self.test_path = opts.test_path
+        self.test_train_path = opts.test_train_path
         self.parameters['tag_scheme'] = opts.tag_scheme
         self.parameters['zeros'] = opts.zeros
         self.parameters['char_dim'] = opts.char_dim
         self.parameters['char_lstm_dim'] = opts.char_lstm_dim
-        self.parameters['char_bidirect'] = opts.char_bidirect
+        self.parameters['char_bidirect'] = opts.char_bidirection
         self.parameters['word_dim'] = opts.word_dim
         self.parameters['word_lstm_dim'] = opts.word_lstm_dim
-        self.parameters['word_bidirect'] = opts.word_bidirect
+        self.parameters['word_bidirect'] = opts.word_bidirection
         self.parameters['pre_emb'] = opts.pre_emb
-        self.parameters['all_emb'] = opts.all_emb == 1
-        self.parameters['crf'] = opts.crf == 1
+        self.parameters['all_emb'] = opts.all_emb
+        self.parameters['crf'] = opts.use_crf
         self.parameters['dropout'] = opts.dropout
-        self.parameters['reload'] = opts.reload == 1
-        self.parameters['name'] = opts.name
+        self.parameters['name'] = 'ner'
         self.parameters['char_mode'] = 'CNN'
         self.use_gpu = torch.cuda.is_available()
         self.mapping_file = 'models/mapping.pkl'
@@ -143,12 +142,14 @@ class Trainpipeline():
                            char_mode=self.parameters['char_mode'])
         # n_cap=4,
         # cap_embedding_dim=10)
-        if self.parameters['reload']:
+        try:
             self.model.load_state_dict(torch.load(self.model_name))
+        except:
+            print("No model available!!!")
         if self.use_gpu:
             self.model.cuda()
         self.learning_rate = 0.002
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate, momentum=0.9)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.train_data = train_data
         self.dev_data = dev_data
         self.test_data = test_data
