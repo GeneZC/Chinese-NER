@@ -78,28 +78,28 @@ class Trainpipeline():
         dico_tags, tag_to_id, id_to_tag = tag_mapping(train_sentences)
 
         train_data = prepare_dataset(
-            train_sentences, word_to_id, char_to_id, tag_to_id, lower
+            train_sentences, word_to_id, char_to_id, tag_to_id
         )
         dev_data = prepare_dataset(
-            dev_sentences, word_to_id, char_to_id, tag_to_id, lower
+            dev_sentences, word_to_id, char_to_id, tag_to_id
         )
         test_data = prepare_dataset(
-            test_sentences, word_to_id, char_to_id, tag_to_id, lower
+            test_sentences, word_to_id, char_to_id, tag_to_id
         )
         test_train_data = prepare_dataset(
-            test_train_sentences, word_to_id, char_to_id, tag_to_id, lower
+            test_train_sentences, word_to_id, char_to_id, tag_to_id
         )
 
         print("%i / %i / %i sentences in train / dev / test." % (
             len(train_data), len(dev_data), len(test_data)))
 
         all_word_embeds = {}
-        for i, line in enumerate(codecs.open(opts.pre_emb, 'r', 'utf-8')):
+        for i, line in enumerate(codecs.open(self.parameters['pre_emb'], 'r', 'utf-8')):
             s = line.strip().split()
             if len(s) == self.parameters['word_dim'] + 1:
                 all_word_embeds[s[0]] = np.array([float(i) for i in s[1:]])
 
-        word_embeds = np.random.uniform(-np.sqrt(0.06), np.sqrt(0.06), (len(word_to_id), opts.word_dim))
+        word_embeds = np.random.uniform(-np.sqrt(0.06), np.sqrt(0.06), (len(word_to_id), self.parameters['word_dim']))
 
         for w in word_to_id:
             if w in all_word_embeds:
