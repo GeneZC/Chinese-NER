@@ -15,99 +15,7 @@ import visdom
 from utils import *
 from loader import *
 from model import BiLSTM_CRF
-
-
-def create_parser():
-    optparser = optparse.OptionParser()
-    optparser.add_option(
-        "--train", default="dataset/eng.train",
-        help="train set location"
-    )
-    optparser.add_option(
-        "--dev", default="dataset/eng.testa",
-        help="dev set location"
-    )
-    optparser.add_option(
-        "--test", default="dataset/eng.testb",
-        help="test set location"
-    )
-    optparser.add_option(
-        '--test_train', default='dataset/eng.train54019',
-        help='test train'
-    )
-    optparser.add_option(
-        '--score', default='evaluation/temp/score.txt',
-        help='score file location'
-    )
-    optparser.add_option(
-        "--tag_scheme", default="iobes",
-        help="tagging scheme (IOB or IOBES)"
-    )
-    optparser.add_option(
-        "--zeros", default="0",
-        type='int', help="replace digits with 0"
-    )
-    optparser.add_option(
-        "--char_dim", default="25",
-        type='int', help="char embedding dimension"
-    )
-    optparser.add_option(
-        "-C", "--char_lstm_dim", default="25",
-        type='int', help="Char LSTM hidden layer size"
-    )
-    optparser.add_option(
-        "-b", "--char_bidirect", default="1",
-        type='int', help="Use a bidirectional LSTM for chars"
-    )
-    optparser.add_option(
-        "-w", "--word_dim", default="100",
-        type='int', help="Token embedding dimension"
-    )
-    optparser.add_option(
-        "-W", "--word_lstm_dim", default="200",
-        type='int', help="Token LSTM hidden layer size"
-    )
-    optparser.add_option(
-        "-B", "--word_bidirect", default="1",
-        type='int', help="Use a bidirectional LSTM for words"
-    )
-    optparser.add_option(
-        "-p", "--pre_emb", default="models/glove.6B.100d.txt",
-        help="Location of pretrained embeddings"
-    )
-    optparser.add_option(
-        "-A", "--all_emb", default="1",
-        type='int', help="Load all embeddings"
-    )
-    optparser.add_option(
-        "-f", "--crf", default="1",
-        type='int', help="Use CRF (0 to disable)"
-    )
-    optparser.add_option(
-        "-D", "--dropout", default="0.5",
-        type='float', help="Droupout on the input (0 = no dropout)"
-    )
-    optparser.add_option(
-        "-r", "--reload", default="0",
-        type='int', help="Reload the last saved model"
-    )
-    optparser.add_option(
-        "-g", '--use_gpu', default='1',
-        type='int', help='whether or not to ues gpu'
-    )
-    optparser.add_option(
-        '--loss', default='loss.txt',
-        help='loss file location'
-    )
-    optparser.add_option(
-        '--name', default='test',
-        help='model name'
-    )
-    optparser.add_option(
-        '--char_mode', choices=['CNN', 'LSTM'], default='CNN',
-        help='char_CNN or char_LSTM'
-    )
-    return optparser
+from config import Config
 
 class Trainpipeline():
     def __init__(self, opts):
@@ -117,25 +25,23 @@ class Trainpipeline():
         self.test_path = opts.test
         self.test_train_path = opts.test_train
         self.parameters['tag_scheme'] = opts.tag_scheme
-        self.parameters['lower'] = opts.lower == 1
-        self.parameters['zeros'] = opts.zeros == 1
+        self.parameters['zeros'] = opts.zeros
         self.parameters['char_dim'] = opts.char_dim
         self.parameters['char_lstm_dim'] = opts.char_lstm_dim
-        self.parameters['char_bidirect'] = opts.char_bidirect == 1
+        self.parameters['char_bidirect'] = opts.char_bidirect
         self.parameters['word_dim'] = opts.word_dim
         self.parameters['word_lstm_dim'] = opts.word_lstm_dim
-        self.parameters['word_bidirect'] = opts.word_bidirect == 1
+        self.parameters['word_bidirect'] = opts.word_bidirect
         self.parameters['pre_emb'] = opts.pre_emb
         self.parameters['all_emb'] = opts.all_emb == 1
         self.parameters['crf'] = opts.crf == 1
         self.parameters['dropout'] = opts.dropout
         self.parameters['reload'] = opts.reload == 1
         self.parameters['name'] = opts.name
-        self.parameters['char_mode'] = opts.char_mode
-        self.parameters['use_gpu'] = opts.use_gpu == 1 and torch.cuda.is_available()
-        self.use_gpu = self.parameters['use_gpu']
+        self.parameters['char_mode'] = 'CNN'
+        self.use_gpu = torch.cuda.is_available()
         self.mapping_file = 'models/mapping.pkl'
-        self.model_name = models_path + self.parameters['name']  # get_name(self.parameters)
+        self.model_name = models_path + 'ner'  # get_name(self.parameters)
         self.tmp_model = self.model_name + '.tmp'
 
         assert os.path.isfile(opts.train)
@@ -430,8 +336,7 @@ class Trainpipeline():
         return best_F, new_F, save
 
 if __name__ == '__main__':
-    optparser = create_parser()
-    opts = optparser.parse_args()[0]
-    train_pipeline = Trainpipeline(opts)
+    conf = Config
+    train_pipeline = Trainpipeline(conf)
     train_pipeline.load()
     train_pipeline.train()
