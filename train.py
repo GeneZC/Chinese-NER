@@ -104,15 +104,13 @@ class Trainpipeline():
         for w in word_to_id:
             if w in all_word_embeds:
                 word_embeds[word_to_id[w]] = all_word_embeds[w]
-            elif w.lower() in all_word_embeds:
-                word_embeds[word_to_id[w]] = all_word_embeds[w.lower()]
 
         print('Loaded %i pretrained embeddings.' % len(all_word_embeds))
 
         with open(self.mapping_file, 'wb') as f:
             mappings = {
                 'word_to_id': word_to_id,
-                'tag_to_id': self.tag_to_id,
+                'tag_to_id': tag_to_id,
                 'char_to_id': char_to_id,
                 'self.parameters': self.parameters,
                 'word_embeds': word_embeds
