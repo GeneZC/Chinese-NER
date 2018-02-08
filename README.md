@@ -2,7 +2,7 @@
 An attempt to do better on Chinese NER task.
 ## Reference & Inspiration
 - [Neural Architectures for Named Entity Recognition](https://arxiv.org/pdf/1603.01360.pdf)
-  > - with pretrained word2vec embedding
+  > - with pretrained glove embedding
   > - Bi-LSTM (word-level input)
   > - Bi-LSTM (character-level input)
   > - concat above two inputs to form the real input 
