@@ -158,7 +158,6 @@ class Trainpipeline():
         self.model.train(True)
         for epoch in range(1, 10001):
             for i, index in enumerate(np.random.permutation(len(self.train_data))):
-                tr = time.time()
                 count += 1
                 data = self.train_data[index]
                 self.model.zero_grad()
@@ -196,14 +195,13 @@ class Trainpipeline():
 
 
                 targets = torch.LongTensor(tags)
-                caps = Variable(torch.LongTensor(data['caps']))
                 if self.use_gpu:
-                    neg_log_likelihood = self.model.neg_log_likelihood(sentence_in.cuda(), targets.cuda(), chars2_mask.cuda(), caps.cuda(), chars2_length, d)
+                    neg_log_likelihood = self.model.neg_log_likelihood(sentence_in.cuda(), targets.cuda(), chars2_mask.cuda(), chars2_length, d)
                 else:
-                    neg_log_likelihood = self.model.neg_log_likelihood(sentence_in, targets, chars2_mask, caps, chars2_length, d)
+                    neg_log_likelihood = self.model.neg_log_likelihood(sentence_in, targets, chars2_mask, chars2_length, d)
                 loss += neg_log_likelihood.data[0] / len(data['words'])
                 neg_log_likelihood.backward()
-                torch.nn.utils.clip_grad_norm(self.model.parameters(), 5.0)
+                torch.nn.utils.clip_grad_norm(self.model.parameters(), 5.0) # clip: 5.0
                 self.optimizer.step()
 
                 if count % plot_every == 0:
@@ -253,7 +251,6 @@ class Trainpipeline():
             ground_truth_id = data['tags']
             words = data['str_words']
             chars2 = data['chars']
-            caps = data['caps']
 
             if self.parameters['char_mode'] == 'LSTM':
                 chars2_sorted = sorted(chars2, key=lambda p: len(p), reverse=True)
@@ -280,11 +277,10 @@ class Trainpipeline():
                 chars2_mask = Variable(torch.LongTensor(chars2_mask))
 
             dwords = Variable(torch.LongTensor(data['words']))
-            dcaps = Variable(torch.LongTensor(caps))
             if self.use_gpu:
-                val, out = model(dwords.cuda(), chars2_mask.cuda(), dcaps.cuda(), chars2_length, d)
+                val, out = model(dwords.cuda(), chars2_mask.cuda(), chars2_length, d)
             else:
-                val, out = model(dwords, chars2_mask, dcaps, chars2_length, d)
+                val, out = model(dwords, chars2_mask, chars2_length, d)
             predicted_id = out
             for (word, true_id, pred_id) in zip(words, ground_truth_id, predicted_id):
                 line = ' '.join([word, self.id_to_tag[true_id], self.id_to_tag[pred_id]])
