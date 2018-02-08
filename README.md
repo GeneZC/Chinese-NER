@@ -22,4 +22,14 @@ An attempt to do better on Chinese NER task.
   > - CRF loss layer
 - [NER-pytorch](https://github.com/ZhixiuYe/NER-pytorch)
   > - a pytorch version implementation which is similar to the very beginning one
-  
+## Some Intuitions
+- replace word2vec by [GloVe](https://github.com/stanfordnlp/GloVe)
+  > that is, '北理工' will be trained rather than '北'、'理'、'工' be separately pre-trained
+- using [fastText](https://github.com/facebookresearch/fastText)'s ideas: 
+  > so called sub-words, and not in character-level, in word-level instead.
+  > in Chinese, means different combinations of characters
+  > for example, in a word embedding '北理工', \['北','理','工','北理','理工'\] will be considered differently
+- or, using CNN layer to capture features above
+- futhermore, I found that simplified version of organization or localization names are hard to capture
+  > it might be the problem of pretrained corpus
+  > or we should come up with a solution to solve this
