@@ -31,5 +31,6 @@ An attempt to do better on Chinese NER task.
   > for example, in a word embedding '北理工', \['北','理','工','北理','理工'\] will be considered differently
 - or, using CNN layer to capture features above
 - futhermore, I found that simplified version of organization or localization names are hard to capture
+  > such as '央视' which represents '中央电视台'
   > it might be the problem of pretrained corpus
   > or we should come up with a solution to solve this
