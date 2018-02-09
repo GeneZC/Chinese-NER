@@ -60,5 +60,21 @@ def preprocess(filename):
             f_save.write('\n')
     f_save.close()
 
+def create_corpus(filename):
+    f_save = open('text8', 'a+', encoding='utf-8')
+    count = 0
+    with open(filename, 'r', encoding='utf-8') as f:
+        for line in f:
+            if line == '\n':
+                continue
+            else:
+                word = line.split(' ')[0]
+                count += 1
+                f_save.write(' ' + word)
+    f_save.write('\n')
+    f_save.close()
+    print('word count:' + str(count))
+
 if __name__ == '__main__':
-    preprocess('raw.txt')
+    # preprocess('raw.txt')
+    create_corpus('prepro.txt')
