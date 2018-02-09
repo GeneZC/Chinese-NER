@@ -2,11 +2,12 @@
 # author: Gene_ZC
 
 import codecs
+import gensim
 
 def preprocess(filename):
     temp_str = None
     flag = False
-    f_save = open('prepro.txt', 'a+', encoding='utf-8')
+    f_save = open('data/prepro.txt', 'a+', encoding='utf-8')
     with codecs.open(filename, 'r', encoding='gbk') as f:
         for line in f:
             if line == '\r\n':
@@ -75,6 +76,12 @@ def create_corpus(filename):
     f_save.close()
     print('word count:' + str(count))
 
+def test():
+    model = gensim.models.KeyedVectors.load_word2vec_format('vectors.txt', binary=False)
+    sim = model.most_similar('泽民', topn=10)
+    print(sim)
+
 if __name__ == '__main__':
-    # preprocess('raw.txt')
-    create_corpus('prepro.txt')
+    # preprocess('data/raw.txt')
+    # create_corpus('data/prepro.txt')
+    test()
