@@ -61,7 +61,7 @@ def preprocess(filename):
     f_save.close()
 
 def create_corpus(filename):
-    f_save = open('text8', 'a+', encoding='utf-8')
+    f_save = open('Glove/text8', 'a+', encoding='utf-8')
     count = 0
     with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
