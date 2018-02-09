@@ -77,7 +77,7 @@ def create_corpus(filename):
     print('word count:' + str(count))
 
 def test():
-    model = gensim.models.KeyedVectors.load_word2vec_format('vectors.txt', binary=False)
+    model = gensim.models.KeyedVectors.load_word2vec_format('embedding/fasttext_vec.txt', binary=False)
     sim = model.most_similar('泽民', topn=10)
     print(sim)
 
