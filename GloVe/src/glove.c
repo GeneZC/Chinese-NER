@@ -160,6 +160,7 @@ int save_params() {
             if(fgs == NULL) {fprintf(stderr, "Unable to open file %s.\n",save_gradsq_file); return 1;}
         }
         fout = fopen(output_file,"wb");
+        fprintf(fout,"%lld %d\n", vocab_size, vector_size);
         if(fout == NULL) {fprintf(stderr, "Unable to open file %s.\n",save_W_file); return 1;}
         fid = fopen(vocab_file, "r");
         sprintf(format,"%%%ds",MAX_STRING_LENGTH);

@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d97d373c-ca1e-45ca-829d-7c552fa2480d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/config.py" afterPath="$PROJECT_DIR$/config.py" />
-      <change beforePath="$PROJECT_DIR$/prepro.txt" afterPath="$PROJECT_DIR$/data/prepro.txt" />
-      <change beforePath="$PROJECT_DIR$/preprocess.py" afterPath="$PROJECT_DIR$/preprocess.py" />
-      <change beforePath="$PROJECT_DIR$/raw.txt" afterPath="$PROJECT_DIR$/data/raw.txt" />
-      <change beforePath="$PROJECT_DIR$/text8" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/vectors.txt" afterPath="$PROJECT_DIR$/embedding/vectors.txt" />
-      <change beforePath="$PROJECT_DIR$/vocab.txt" afterPath="$PROJECT_DIR$/embedding/vocab.txt" />
-    </list>
+    <list default="true" id="d97d373c-ca1e-45ca-829d-7c552fa2480d" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -104,11 +96,6 @@
             <path>
               <item name="Chinese-NER" type="b2602c69:ProjectViewProjectNode" />
               <item name="Chinese-NER" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Chinese-NER" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Chinese-NER" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
