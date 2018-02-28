@@ -7,7 +7,6 @@ import torch
 import time
 import pickle
 import sys
-import visdom
 from torch.autograd import Variable
 from collections import OrderedDict
 from model import BiLSTM_CRF
@@ -149,9 +148,8 @@ class Trainpipeline():
         best_train_F = -1.0
         all_F = [[0, 0, 0]]
         plot_every = 10
-        eval_every = 20
+        eval_every = 50
         count = 0
-        vis = visdom.Visdom()
         sys.stdout.flush()
         t = time.time()
         self.model.train(True)
@@ -209,12 +207,6 @@ class Trainpipeline():
                     if losses == []:
                         losses.append(loss)
                     losses.append(loss)
-                    text = '<p>' + '</p><p>'.join([str(l) for l in losses[-9:]]) + '</p>'
-                    losswin = 'loss_' + self.parameters['name']
-                    textwin = 'loss_text_' + self.parameters['name']
-                    vis.line(np.array(losses), X=np.array([plot_every*i for i in range(len(losses))]),
-                        win=losswin, opts={'title': losswin, 'legend': ['loss']})
-                    vis.text(text, win=textwin, opts={'title': textwin})
                     loss = 0.0
 
                 if count % (eval_every) == 0 and count > (eval_every * 20) or \
@@ -228,10 +220,8 @@ class Trainpipeline():
                     sys.stdout.flush()
 
                     all_F.append([new_train_F, new_dev_F, new_test_F])
-                    Fwin = 'F-score of {train, dev, test}_' + self.parameters['name']
-                    vis.line(np.array(all_F), win=Fwin,
-                        X=np.array([eval_every*i for i in range(len(all_F))]),
-                        opts={'title': Fwin, 'legend': ['train', 'dev', 'test']})
+                    print('F-score of {train, dev, test}_' + self.parameters['name'])
+                    print(str(new_train_F) + '|' + str(new_dev_F) + '|' + str(new_test_F))
                     self.model.train(True)
 
                 if count % len(self.train_data) == 0:
@@ -287,7 +277,7 @@ class Trainpipeline():
         predf = eval_temp + '/pred.' + self.parameters['name']
         scoref = eval_temp + '/score.' + self.parameters['name']
 
-        with open(predf, 'wb') as f:
+        with open(predf, 'w') as f:
             f.write('\n'.join(prediction))
 
         os.system('%s < %s > %s' % (eval_script, predf, scoref))
