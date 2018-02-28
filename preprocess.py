@@ -10,7 +10,7 @@ def split_dataset(filename):
         lst = f.read().split('\n\n')
         length = len(lst)
         random.shuffle(lst)
-        train_lst = lst[:int(length/2)]
+        train_lst = lst[:int(length/4)+int(length/2)]
         dev_lst = lst[int(length/2):int(length/4)+int(length/2)]
         test_lst = lst[int(length/4)+int(length/2):]
     with open('data/train.txt', 'w') as train:

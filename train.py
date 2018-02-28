@@ -6,7 +6,6 @@ import loader
 import torch
 import time
 import pickle
-import matplotlib.pyplot as plt
 import sys
 import visdom
 from torch.autograd import Variable
@@ -239,8 +238,6 @@ class Trainpipeline():
                     adjust_learning_rate(self.optimizer, lr=self.learning_rate/(1+0.05*count/len(self.train_data)))
                     
         print(time.time() - t)
-        plt.plot(losses)
-        plt.show()
 
     def evaluating(self, model, datas, best_F):
         prediction = []
