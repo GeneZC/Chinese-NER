@@ -3,11 +3,10 @@
 
 class Config():
     def __init__(self):
-        self.train_path = "dataset/eng.train"
-        self.dev_path = "dataset/eng.testa"
-        self.test_path = "dataset/eng.testb"
-        self.test_train_path = "dataset/eng.train54019"
-        self.score_file = "evaluation/temp/score.txt"
+        self.train_path = "data/train.txt"
+        self.dev_path = "data/dev.txt"
+        self.test_path = "data/test.txt"
+        self.score_file = "eval/temp/score.txt"
         self.tag_scheme = "iobes" # "iobes" or "iob"
         self.zeros = True # replace digits with 0s
         self.word_dim = 100  # character embedding dimension

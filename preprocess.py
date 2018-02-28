@@ -3,6 +3,29 @@
 
 import codecs
 import gensim
+import random
+
+def split_dataset(filename):
+    with open(filename, 'r', encoding='utf-8') as f:
+        lst = f.read().split('\n\n')
+        length = len(lst)
+        random.shuffle(lst)
+        train_lst = lst[:int(length/2)]
+        dev_lst = lst[int(length/2):int(length/4)+int(length/2)]
+        test_lst = lst[int(length/4)+int(length/2):]
+    with open('data/train.txt', 'w') as train:
+        for item in train_lst:
+            train.write(item+'\n\n')
+
+    with open('data/dev.txt', 'w') as dev:
+        for item in dev_lst:
+            dev.write(item+'\n\n')
+
+    with open('data/test.txt', 'w') as test:
+        for item in test_lst:
+            test.write(item+'\n\n')       
+
+
 
 def preprocess(filename):
     temp_str = None
@@ -84,4 +107,5 @@ def test():
 if __name__ == '__main__':
     # preprocess('data/raw.txt')
     # create_corpus('data/prepro.txt')
-    test()
+    split_dataset('data/prepro.txt')
+    # test()
