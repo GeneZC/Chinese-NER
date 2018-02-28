@@ -18,7 +18,7 @@ An attempt to do better on Chinese NER task.
 See also in [Improving Named Entity Recognition for Chinese Social Media
 with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P16/P16-2025.pdf)
   > - with pretrained word2vec(same as above one) embedding
-  > - Bi-LSTM or CNN(CNN is better) (do a segmentation operation to yield input)
+  > - do a segmentation operation to yield input
   > - concatenate above two
   > - Bi-LSTM (real inut)
   > - CRF loss layer
