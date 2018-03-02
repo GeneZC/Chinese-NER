@@ -2,15 +2,23 @@ from __future__ import print_function, division
 import os
 import re
 import codecs
+import unicodedata
 from utils import create_dico, create_mapping, zero_digits
 from utils import iob2, iob_iobes
 import model
+import string
 import random
 import numpy as np
 
 
+def unicodeToAscii(s):
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', s)
+        if unicodedata.category(c) != 'Mn'
+        and c in string.ascii_letters + " .,;'-"
+    )
 
-def load_sentences(path, zeros):
+def load_sentences(path, lower, zeros):
     """
     Load sentences. A line must contain at least a word and its tag.
     Sentences are separated by empty lines.
@@ -58,11 +66,11 @@ def update_tag_scheme(sentences, tag_scheme):
             raise Exception('Unknown tagging scheme!')
 
 
-def word_mapping(sentences):
+def word_mapping(sentences, lower):
     """
     Create a dictionary and a mapping of words, sorted by frequency.
     """
-    words = [[x[0] for x in s] for s in sentences]
+    words = [[x[0].lower() if lower else x[0] for x in s] for s in sentences]
     dico = create_dico(words)
 
     dico['<PAD>'] = 10000001
@@ -138,17 +146,18 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False):
     }
 
 
-def prepare_dataset(sentences, word_to_id, char_to_id, tag_to_id):
+def prepare_dataset(sentences, word_to_id, char_to_id, tag_to_id, lower=True):
     """
     Prepare the dataset. Return a list of lists of dictionaries containing:
         - word indexes
         - word char indexes
         - tag indexes
     """
+    def f(x): return x.lower() if lower else x
     data = []
     for s in sentences:
         str_words = [w[0] for w in s]
-        words = [word_to_id[w if w in word_to_id else '<UNK>']
+        words = [word_to_id[f(w) if f(w) in word_to_id else '<UNK>']
                  for w in str_words]
         # Skip characters that are not in the training set
         chars = [[char_to_id[c] for c in w if c in char_to_id]
@@ -193,7 +202,8 @@ def augment_with_pretrained(dictionary, ext_emb_path, words):
         for word in words:
             if any(x in pretrained for x in [
                 word,
-                re.sub('\d', '0', word)
+                word.lower(),
+                re.sub('\d', '0', word.lower())
             ]) and word not in dictionary:
                 dictionary[word] = 0
 
