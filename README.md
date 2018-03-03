@@ -66,15 +66,20 @@ TO BE DONE ...
 
 ### Version 1
 - Environment and Consumption: python2.x, Pytorch; Titan Xp, ~12h
+
 - RAW Corpus: 人民日报199801-词性标注
+
 - Preprocessed(with iob as tag schema): SAME as baseline
+
 - Dataset split: SAME as baseline
+
 - Structure
   > - with pretrained GloVe embedding for words and random initialized embedding for characters
   > - use a layer of maxpooled CNN to capture the features of characters projected by embedding
   > - concatenate word-level input and above one
   > - Bi-LSTM
   > - CRF loss layer
+  
 - Result(Test only)
 
 | Type | Accuracy | Precision | Recall | F1 |
