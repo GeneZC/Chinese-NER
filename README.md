@@ -45,7 +45,7 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
   ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/raw.png)
 
-- Preprocessed(with iobe as tag schema) 
+- Preprocessed(with iob as tag schema) 
 
   ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/prepro.png)
 
@@ -69,7 +69,7 @@ TO BE DONE ...
 ### Version 1
 - Environment and Consumption: python2.x, Pytorch; Titan Xp, ~12h
 - RAW Corpus: 人民日报199801-词性标注
-- Preprocessed(with iobe as tag schema): SAME as baseline
+- Preprocessed(with iob as tag schema): SAME as baseline
 - Dataset split: SAME as baseline
 - Structure
   > - with pretrained GloVe embedding for words and random initialized embedding for characters
