@@ -34,15 +34,13 @@ class BiLSTM_CRF(nn.Module):
 
     def __init__(self, vocab_size, tag_to_ix, embedding_dim, hidden_dim, char_lstm_dim=25,
                  char_to_ix=None, pre_word_embeds=None, char_embedding_dim=25, use_gpu=False,
-                 n_cap=None, cap_embedding_dim=None, use_crf=True, char_mode='CNN'):
+                 use_crf=True, char_mode='CNN'):
         super(BiLSTM_CRF, self).__init__()
         self.use_gpu = use_gpu
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
         self.vocab_size = vocab_size
         self.tag_to_ix = tag_to_ix
-        self.n_cap = n_cap
-        self.cap_embedding_dim = cap_embedding_dim
         self.use_crf = use_crf
         self.tagset_size = len(tag_to_ix)
         self.out_channels = char_lstm_dim
@@ -50,9 +48,6 @@ class BiLSTM_CRF(nn.Module):
 
         print('char_mode: %s, out_channels: %d, hidden_dim: %d, ' % (char_mode, char_lstm_dim, hidden_dim))
 
-        if self.n_cap and self.cap_embedding_dim:
-            self.cap_embeds = nn.Embedding(self.n_cap, self.cap_embedding_dim)
-            init_embedding(self.cap_embeds.weight)
 
         if char_embedding_dim is not None:
             self.char_lstm_dim = char_lstm_dim
@@ -72,16 +67,11 @@ class BiLSTM_CRF(nn.Module):
             self.pre_word_embeds = False
 
         self.dropout = nn.Dropout(0.5)
-        if self.n_cap and self.cap_embedding_dim:
-            if self.char_mode == 'LSTM':
-                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2+cap_embedding_dim, hidden_dim, bidirectional=True)
-            if self.char_mode == 'CNN':
-                self.lstm = nn.LSTM(embedding_dim+self.out_channels+cap_embedding_dim, hidden_dim, bidirectional=True)
-        else:
-            if self.char_mode == 'LSTM':
-                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2, hidden_dim, bidirectional=True)
-            if self.char_mode == 'CNN':
-                self.lstm = nn.LSTM(embedding_dim+self.out_channels, hidden_dim, bidirectional=True)
+
+        if self.char_mode == 'LSTM':
+            self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2, hidden_dim, bidirectional=True)
+        if self.char_mode == 'CNN':
+            self.lstm = nn.LSTM(embedding_dim+self.out_channels, hidden_dim, bidirectional=True)
         init_lstm(self.lstm)
         self.hw_trans = nn.Linear(self.out_channels, self.out_channels)
         self.hw_gate = nn.Linear(self.out_channels, self.out_channels)
@@ -115,7 +105,7 @@ class BiLSTM_CRF(nn.Module):
 
         return score
 
-    def _get_lstm_features(self, sentence, chars2, caps, chars2_length, d):
+    def _get_lstm_features(self, sentence, chars2, chars2_length, d):
 
         if self.char_mode == 'LSTM':
             # self.char_lstm_hidden = self.init_lstm_hidden(dim=self.char_lstm_dim, bidirection=True, batchsize=chars2.size(0))
@@ -145,14 +135,7 @@ class BiLSTM_CRF(nn.Module):
         # chars_embeds = g * h + (1 - g) * chars_embeds
 
         embeds = self.word_embeds(sentence)
-        if self.n_cap and self.cap_embedding_dim:
-            cap_embedding = self.cap_embeds(caps)
-
-        if self.n_cap and self.cap_embedding_dim:
-            embeds = torch.cat((embeds, chars_embeds, cap_embedding), 1)
-        else:
-            embeds = torch.cat((embeds, chars_embeds), 1)
-
+        embeds = torch.cat((embeds, chars_embeds), 1)
         embeds = embeds.unsqueeze(1)
         embeds = self.dropout(embeds)
         lstm_out, _ = self.lstm(embeds)
@@ -215,10 +198,10 @@ class BiLSTM_CRF(nn.Module):
         best_path.reverse()
         return path_score, best_path
 
-    def neg_log_likelihood(self, sentence, tags, chars2, caps, chars2_length, d):
+    def neg_log_likelihood(self, sentence, tags, chars2, chars2_length, d):
         # sentence, tags is a list of ints
         # features is a 2D tensor, len(sentence) * self.tagset_size
-        feats = self._get_lstm_features(sentence, chars2, caps, chars2_length, d)
+        feats = self._get_lstm_features(sentence, chars2, chars2_length, d)
 
         if self.use_crf:
             forward_score = self._forward_alg(feats)
@@ -230,8 +213,8 @@ class BiLSTM_CRF(nn.Module):
             return scores
 
 
-    def forward(self, sentence, chars, caps, chars2_length, d):
-        feats = self._get_lstm_features(sentence, chars, caps, chars2_length, d)
+    def forward(self, sentence, chars, chars2_length, d):
+        feats = self._get_lstm_features(sentence, chars, chars2_length, d)
         # viterbi to get tag_seq
         if self.use_crf:
             score, tag_seq = self.viterbi_decode(feats)

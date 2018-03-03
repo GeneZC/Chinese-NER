@@ -1,22 +1,13 @@
-from __future__ import print_function, division
+
 import os
 import re
 import codecs
-import unicodedata
 from utils import create_dico, create_mapping, zero_digits
 from utils import iob2, iob_iobes
 import model
-import string
 import random
 import numpy as np
 
-
-def unicodeToAscii(s):
-    return ''.join(
-        c for c in unicodedata.normalize('NFD', s)
-        if unicodedata.category(c) != 'Mn'
-        and c in string.ascii_letters + " .,;'-"
-    )
 
 def load_sentences(path, lower, zeros):
     """
@@ -137,12 +128,10 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False):
              for w in str_words]
     chars = [[char_to_id[c] for c in w if c in char_to_id]
              for w in str_words]
-    caps = [cap_feature(w) for w in str_words]
     return {
         'str_words': str_words,
         'words': words,
         'chars': chars,
-        'caps': caps
     }
 
 
@@ -162,13 +151,11 @@ def prepare_dataset(sentences, word_to_id, char_to_id, tag_to_id, lower=True):
         # Skip characters that are not in the training set
         chars = [[char_to_id[c] for c in w if c in char_to_id]
                  for w in str_words]
-        caps = [cap_feature(w) for w in str_words]
         tags = [tag_to_id[w[-1]] for w in s]
         data.append({
             'str_words': str_words,
             'words': words,
             'chars': chars,
-            'caps': caps,
             'tags': tags,
         })
     return data

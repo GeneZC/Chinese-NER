@@ -9,6 +9,7 @@ class Config():
     score_file = "eval/temp/score.txt"
     mapping_path = 'models/mapping.pkl'
     tag_scheme = "iobes" # "iobes" or "iob"
+    lower = True
     zeros = True # replace digits with 0s
     word_dim = 100  # character embedding dimension
     word_lstm_dim = 100  # character lstm hidden layer dimension
@@ -22,3 +23,4 @@ class Config():
     loss_file = "loss.txt"
     name = 'ner'
     char_mode = 'CNN'
+    reload = False

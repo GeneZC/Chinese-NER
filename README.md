@@ -35,3 +35,45 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > such as '央视' which represents '中央电视台'.
   > it might be the problem of pretrained corpus
   > or we should come up with a solution to solve this
+
+## Experiments
+
+### Baseline
+- Environment and Consumption: python3.x, TensorFlow; Titan Xp, ~12h
+- RAW Corpus: 人民日报199801-词性标注
+- Preprocessed(with iobe as tag schema):  
+14384 / 4795 / 4799 sentences in train / dev / test.
+- Dataset split: 
+  > 50% train, 25% develop, 25% test
+- Structure
+  > - with pretrained GloVe embedding for characters and random initialized embedding for segmentations
+  > - concatenate above two
+  > - Bi-LSTM
+  > - CRF loss layer
+- Result(Test only):  
+
+| Type | Accuracy | Precision | Recall | F1 |
+| :-: | :-: | :-: | :-: | :-: |
+TO BE DONE ...
+
+### Version 1
+- Environment and Consumption: python2.x, Pytorch; Titan Xp, ~12h
+- RAW Corpus: 人民日报199801-词性标注
+- Preprocessed(with iobe as tag schema):  
+14384 / 4795 / 4799 sentences in train / dev / test.
+- Dataset split: 
+  > 50% train, 25% develop, 25% test
+- Structure
+  > - with pretrained GloVe embedding for words and random initialized embedding for characters
+  > - use a layer of maxpooled CNN to capture the features of characters projected by embedding
+  > - concatenate word-level input and above one
+  > - Bi-LSTM
+  > - CRF loss layer
+- Result(Test only):  
+
+| Type | Accuracy | Precision | Recall | F1 |
+| :-: | :-: | :-: | :-: | :-: |
+| LOC | \ | 95.01% | 91.76% | 93.36 |
+| ORG | \ | 88.76% | 89.45% | 89.10 |
+|PER| \ | 97.14% | 96.19% | 96.66 |
+|OVER ALL| 98.81% | 94.46% | 92.87% | 93.66 | 
