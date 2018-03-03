@@ -4,7 +4,7 @@
 
 class Config():
     train_path = "data/train.txt"
-    dev_path = "data/dev.txt"
+    val_path = "data/val.txt"
     test_path = "data/test.txt"
     score_file = "eval/temp/score.txt"
     mapping_path = 'models/mapping.pkl'

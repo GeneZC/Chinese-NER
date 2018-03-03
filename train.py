@@ -34,12 +34,12 @@ parameters['use_gpu'] = torch.cuda.is_available()
 
 use_gpu = parameters['use_gpu']
 name = parameters['name']
-model_name = os.path.join(model_path, name) #get_name(parameters)
+model_name = os.path.join(models_path, name) #get_name(parameters)
 tmp_model = model_name + '.tmp'
 
 
 assert os.path.isfile(config.train_path)
-assert os.path.isfile(config.dev_path)
+assert os.path.isfile(config.val_path)
 assert os.path.isfile(config.test_path)
 assert parameters['char_dim'] > 0 or parameters['word_dim'] > 0
 assert 0. <= parameters['dropout'] < 1.0
@@ -60,11 +60,11 @@ zeros = parameters['zeros']
 tag_scheme = parameters['tag_scheme']
 
 train_sentences = loader.load_sentences(config.train_path, lower, zeros)
-dev_sentences = loader.load_sentences(config.dev_path, lower, zeros)
+val_sentences = loader.load_sentences(config.val_path, lower, zeros)
 test_sentences = loader.load_sentences(config.test_path, lower, zeros)
 
 update_tag_scheme(train_sentences, tag_scheme)
-update_tag_scheme(dev_sentences, tag_scheme)
+update_tag_scheme(val_sentences, tag_scheme)
 update_tag_scheme(test_sentences, tag_scheme)
 
 dico_words_train = word_mapping(train_sentences, lower)[0]
@@ -73,7 +73,7 @@ dico_words, word_to_id, id_to_word = augment_with_pretrained(
         dico_words_train.copy(),
         parameters['pre_emb'],
         list(itertools.chain.from_iterable(
-            [[w[0] for w in s] for s in dev_sentences + test_sentences])
+            [[w[0] for w in s] for s in test_sentences])
         ) if not parameters['all_emb'] else None
     )
 
@@ -83,15 +83,15 @@ dico_tags, tag_to_id, id_to_tag = tag_mapping(train_sentences)
 train_data = prepare_dataset(
     train_sentences, word_to_id, char_to_id, tag_to_id, lower
 )
-dev_data = prepare_dataset(
-    dev_sentences, word_to_id, char_to_id, tag_to_id, lower
+val_data = prepare_dataset(
+    val_sentences, word_to_id, char_to_id, tag_to_id, lower
 )
 test_data = prepare_dataset(
     test_sentences, word_to_id, char_to_id, tag_to_id, lower
 )
 
-print("%i / %i / %i sentences in train / dev / test." % (
-    len(train_data), len(dev_data), len(test_data)))
+print("%i / %i / %i sentences in train / val / test." % (
+    len(train_data), len(val_data), len(test_data)))
 
 all_word_embeds = {}
 for i, line in enumerate(codecs.open(config.pre_emb, 'r', 'utf-8')):
@@ -138,7 +138,7 @@ learning_rate = 0.001
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 losses = []
 loss = 0.0
-best_dev_F = -1.0
+best_val_F = -1.0
 best_test_F = -1.0
 all_F = [[0, 0]]
 plot_every = 100
@@ -279,15 +279,15 @@ for epoch in range(1, 1001):
 
         if count % (eval_every) == 0:
             model.train(False)
-            print('dev dataset evaluation -----')
-            best_dev_F, new_dev_F, save = evaluating(model, dev_data, best_dev_F)
+            print('train dataset evaluation -----')
+            best_val_F, new_val_F, save = evaluating(model, val_data, best_val_F)
             if save:
                 torch.save(model, model_name)
             print('test dataset evaluation -----')
             best_test_F, new_test_F, _ = evaluating(model, test_data, best_test_F)
             sys.stdout.flush()
 
-            all_F.append([new_dev_F, new_test_F])
+            all_F.append([new_val_F, new_test_F])
             model.train(True)
 
         if count % len(train_data) == 0:

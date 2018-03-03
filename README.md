@@ -47,10 +47,11 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
 - Preprocessed(with iob as tag schema) 
 
+  ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/char_prepro.png)
+
 - Dataset split
-  > 75% train, 12.5% develop, 12.5% test
-  >
-  > 14384 / 4795 / 4799 sentences in train / dev / test.
+  > 75% train, 25% test
+  > 14384 / 4799 sentences in train / test.
 
 - Structure
   > - with pretrained GloVe embedding for characters and random initialized embedding for segmentations
@@ -60,9 +61,12 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
 - Result(Test only)
 
-| Type | Accuracy | Precision | Recall | F1 |
+| Type | Accuracy | Precision | Recall | FB1 |
 | :-: | :-: | :-: | :-: | :-: |
-TO BE DONE ...
+| LOC | \ | 93.15% | 93.60% | 93.38 |
+| ORG | \ | 91.45% | 91.89% | 91.67 |
+| PER | \ | 96.91% | 96.61% | 96.76 |
+| OVER ALL | 99.15% | 94.24% | 94.41% | 94.33 |
 
 ### Version 1
 - Environment and Consumption: python2.x, Pytorch; Titan Xp, ~12h
@@ -70,6 +74,8 @@ TO BE DONE ...
 - RAW Corpus: 人民日报199801-词性标注
 
 - Preprocessed(with iob as tag schema): SAME as baseline
+
+  ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/prepro.png)
 
 - Dataset split: SAME as baseline
 
@@ -82,9 +88,9 @@ TO BE DONE ...
   
 - Result(Test only)
 
-| Type | Accuracy | Precision | Recall | F1 |
+| Type | Accuracy | Precision | Recall | FB1 |
 | :-: | :-: | :-: | :-: | :-: |
 | LOC | \ | 95.01% | 91.76% | 93.36 |
 | ORG | \ | 88.76% | 89.45% | 89.10 |
-|PER| \ | 97.14% | 96.19% | 96.66 |
-|OVER ALL| 98.81% | 94.46% | 92.87% | 93.66 |
+| PER | \ | 97.14% | 96.19% | 96.66 |
+| OVER ALL | 98.81% | 94.46% | 92.87% | 93.66 |

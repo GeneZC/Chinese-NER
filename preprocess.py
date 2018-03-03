@@ -11,21 +11,19 @@ def split_dataset(filename):
         length = len(lst)
         random.shuffle(lst)
         train_lst = lst[:int(length/4)+int(length/2)]
-        dev_lst = lst[int(length/2):int(length/4)+int(length/2)]
+        val_lst = lst[int(length/2):int(length/4)+int(length/2)]
         test_lst = lst[int(length/4)+int(length/2):]
-    with open('data/train.txt', 'w') as train:
+    with open('data/char_train.txt', 'w') as train:
         for item in train_lst:
             train.write(item+'\n\n')
 
-    with open('data/dev.txt', 'w') as dev:
-        for item in dev_lst:
-            dev.write(item+'\n\n')
+    with open('data/char_val.txt', 'w') as val:
+        for item in val_lst:
+            val.write(item+'\n\n')
 
-    with open('data/test.txt', 'w') as test:
+    with open('data/char_test.txt', 'w') as test:
         for item in test_lst:
             test.write(item+'\n\n')       
-
-
 
 def preprocess(filename):
     temp_str = None
@@ -36,7 +34,7 @@ def preprocess(filename):
             if line == '\r\n':
                 continue
             line = line.split('\t')[1]
-            segment_list = line.split('  ')[1:-1]
+            segment_list = line.split('  ')[:-1]
             for item in segment_list:
                 word, feature = item.split('/')[0], item.split('/')[1]
                 if word.startswith('['):
@@ -51,7 +49,6 @@ def preprocess(filename):
                     if anno == ']':
                         temp_str.append(word)
                         feature = feature[-2:]
-                        # f_save.write(temp_str)
                         for i, w in enumerate(temp_str):
                             if i == 0:
                                 if feature == 'nt':  # ORG
@@ -84,8 +81,79 @@ def preprocess(filename):
             f_save.write('\n')
     f_save.close()
 
+def preprocess_char(filename):
+    temp_str = None
+    flag = False
+    f_save = open('data/prepro_char.txt', 'a+', encoding='utf-8')
+    with codecs.open(filename, 'r', encoding='gbk') as f:
+        for line in f:
+            if line == '\r\n':
+                continue
+            line = line.split('\t')[1]
+            segment_list = line.split('  ')[:-1]
+            for item in segment_list:
+                word, feature = item.split('/')[0], item.split('/')[1]
+                if word.startswith('['):
+                    temp_str = []
+                    temp_str.append(word[1:])
+                    flag = True
+                elif flag:
+                    try:
+                        anno = feature[-3]
+                    except:
+                        anno = ''
+                    if anno == ']':
+                        temp_str.append(word)
+                        feature = feature[-2:]
+                        # f_save.write(temp_str)
+                        for i, c in enumerate(''.join(temp_str)):
+                            if i == 0:
+                                if feature == 'nt':  # ORG
+                                    f_save.write(c + ' ' + 'B-' + 'ORG' + '\n')
+                                elif feature == 'ns':  # LOC
+                                    f_save.write(c + ' ' + 'B-' + 'LOC' + '\n')
+                                elif feature == 'nr':  # PER
+                                    f_save.write(c + ' ' + 'B-' + 'PER' + '\n')
+                            else:
+                                if feature == 'nt':  # ORG
+                                    f_save.write(c + ' ' + 'I-' + 'ORG' + '\n')
+                                elif feature == 'ns':  # LOC
+                                    f_save.write(c + ' ' + 'I-' + 'LOC' + '\n')
+                                elif feature == 'nr':  # PER
+                                    f_save.write(c + ' ' + 'I-' + 'PER' + '\n')
+                        flag = False
+                        temp_str = []
+                    else:
+                        temp_str.append(word)
+
+                else:
+
+                    if feature == 'nt':  # ORG
+                        for i, c in enumerate(word):
+                            if i == 0:
+                                f_save.write(c + ' ' + 'B-' + 'ORG' + '\n')
+                            else:
+                                f_save.write(c + ' ' + 'I-' + 'ORG' + '\n')
+                    elif feature == 'ns':  # LOC
+                        for i, c in enumerate(word):
+                            if i == 0:
+                                f_save.write(c + ' ' + 'B-' + 'LOC' + '\n')
+                            else:
+                                f_save.write(c + ' ' + 'I-' + 'LOC' + '\n')
+                    elif feature == 'nr':  # PER
+                        for i, c in enumerate(word):
+                            if i == 0:
+                                f_save.write(c + ' ' + 'B-' + 'PER' + '\n')
+                            else:
+                                f_save.write(c + ' ' + 'I-' + 'PER' + '\n')
+                    else:
+                        for i, c in enumerate(word):
+                            f_save.write(c + ' ' + 'O' + '\n')
+            f_save.write('\n')
+    f_save.close()
+
 def create_corpus(filename):
-    f_save = open('Glove/text8', 'a+', encoding='utf-8')
+    f_save = open('data/text8', 'a+', encoding='utf-8')
     count = 0
     with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
@@ -106,6 +174,7 @@ def test():
 
 if __name__ == '__main__':
     # preprocess('data/raw.txt')
-    # create_corpus('data/prepro.txt')
-    split_dataset('data/prepro.txt')
+    # preprocess_char('data/raw.txt')
+    # create_corpus('data/prepro_char.txt')
+    split_dataset('data/prepro_char.txt')
     # test()
