@@ -46,6 +46,7 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/raw.png)
 
 - Preprocessed(with iobe as tag schema) 
+
   ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/prepro.png)
 
 - Dataset split
