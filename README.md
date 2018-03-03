@@ -47,8 +47,6 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
 - Preprocessed(with iob as tag schema) 
 
-  ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/prepro.png)
-
 - Dataset split
   > 75% train, 12.5% develop, 12.5% test
   >
