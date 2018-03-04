@@ -23,7 +23,12 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > - Bi-LSTM (real input)
   > - CRF loss layer
 - [NER-pytorch](https://github.com/ZhixiuYe/NER-pytorch)
-  > - a pytorch version implementation which is similar to the very beginning one
+  > - a pytorch version implementation which is similar to the very beginning one.
+- [SeqGAN: Sequence Generative Adversarial Nets with Policy Gradient](https://arxiv.org/pdf/1609.05473.pdf)
+  > - a framework using GAN + RL to solve sequence problem.
+- [Adversarial Learning for Chinese NER from Crowd Annotations](https://arxiv.org/pdf/1801.05147.pdf)
+  > - 2018 AAAI Alibaba
+- [RL-GAN For NLP: 强化学习在生成对抗网络文本生成中扮演的角色](http://www.zhuanzhi.ai/document/004615a522841d224fffcbb3abcb8213)
 ## Some Intuitions
 - '北理工' will be trained rather than '北'、'理'、'工' be separately pre-trained
 - using [fastText](https://github.com/facebookresearch/fastText)'s ideas: 
