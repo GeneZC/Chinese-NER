@@ -282,7 +282,7 @@ for epoch in range(1, 1001):
             print('train dataset evaluation -----')
             best_val_F, new_val_F, save = evaluating(model, val_data, best_val_F)
             if save:
-                torch.save(model, model_name)
+                torch.save(model.state_dict(), model_name)
             print('test dataset evaluation -----')
             best_test_F, new_test_F, _ = evaluating(model, test_data, best_test_F)
             sys.stdout.flush()
