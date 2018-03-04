@@ -148,20 +148,34 @@ class BiLSTM_CRF(nn.Module):
         # calculate in log domain
         # feats is len(sentence) * tagset_size
         # initialize alpha with a Tensor with values all equal to -10000.
+        # Do the forward algorithm to compute the partition function
         init_alphas = torch.Tensor(1, self.tagset_size).fill_(-10000.)
+        # START_TAG has all of the score.
         init_alphas[0][self.tag_to_ix[START_TAG]] = 0.
+        # Wrap in a variable so that we will get automatic backprop
         forward_var = autograd.Variable(init_alphas)
         if self.use_gpu:
             forward_var = forward_var.cuda()
+        # Iterate through the sentence
         for feat in feats:
-            emit_score = feat.view(-1, 1)
-            tag_var = forward_var + self.transitions + emit_score
-            max_tag_var, _ = torch.max(tag_var, dim=1)
-            tag_var = tag_var - max_tag_var.view(-1, 1)
-            forward_var = max_tag_var + torch.log(torch.sum(torch.exp(tag_var), dim=1)).view(1, -1) # ).view(1, -1)
-        terminal_var = (forward_var + self.transitions[self.tag_to_ix[STOP_TAG]]).view(1, -1)
+            alphas_t = []  # The forward variables at this timestep
+            for next_tag in range(self.tagset_size):
+                # broadcast the emission score: it is the same regardless of
+                # the previous tag
+                emit_score = feat[next_tag].view(
+                    1, -1).expand(1, self.tagset_size)
+                # the ith entry of trans_score is the score of transitioning to
+                # next_tag from i
+                trans_score = self.transitions[next_tag].view(1, -1)
+                # The ith entry of next_tag_var is the value for the
+                # edge (i -> next_tag) before we do log-sum-exp
+                next_tag_var = forward_var + trans_score + emit_score
+                # The forward variable for this tag is log-sum-exp of all the
+                # scores.
+                alphas_t.append(log_sum_exp(next_tag_var))
+            forward_var = torch.cat(alphas_t).view(1, -1)
+        terminal_var = forward_var + self.transitions[self.tag_to_ix[STOP_TAG]]
         alpha = log_sum_exp(terminal_var)
-        # Z(x)
         return alpha
 
     def viterbi_decode(self, feats):
@@ -172,23 +186,31 @@ class BiLSTM_CRF(nn.Module):
         forward_var = Variable(init_vvars)
         if self.use_gpu:
             forward_var = forward_var.cuda()
+
         for feat in feats:
-            next_tag_var = forward_var.view(1, -1).expand(self.tagset_size, self.tagset_size) + self.transitions
-            _, bptrs_t = torch.max(next_tag_var, dim=1)
-            bptrs_t = bptrs_t.squeeze().data.cpu().numpy()
-            next_tag_var = next_tag_var.data.cpu().numpy()
-            viterbivars_t = next_tag_var[range(len(bptrs_t)), bptrs_t]
-            viterbivars_t = Variable(torch.FloatTensor(viterbivars_t))
-            if self.use_gpu:
-                viterbivars_t = viterbivars_t.cuda()
-            forward_var = viterbivars_t + feat
+            bptrs_t = []  # holds the backpointers for this step
+            viterbivars_t = []  # holds the viterbi variables for this step
+
+            for next_tag in range(self.tagset_size):
+                # next_tag_var[i] holds the viterbi variable for tag i at the
+                # previous step, plus the score of transitioning
+                # from tag i to next_tag.
+                # We don't include the emission scores here because the max
+                # does not depend on them (we add them in below)
+                next_tag_var = forward_var + self.transitions[next_tag]
+                best_tag_id = argmax(next_tag_var)
+                bptrs_t.append(best_tag_id)
+                viterbivars_t.append(next_tag_var[0][best_tag_id])
+            # Now add in the emission scores, and assign forward_var to the set
+            # of viterbi variables we just computed
+            forward_var = (torch.cat(viterbivars_t) + feat).view(1, -1)
             backpointers.append(bptrs_t)
 
+        # Transition to STOP_TAG
         terminal_var = forward_var + self.transitions[self.tag_to_ix[STOP_TAG]]
-        terminal_var.data[self.tag_to_ix[STOP_TAG]] = -10000.
-        terminal_var.data[self.tag_to_ix[START_TAG]] = -10000.
-        best_tag_id = argmax(terminal_var.unsqueeze(0))
-        path_score = terminal_var[best_tag_id]
+        best_tag_id = argmax(terminal_var)
+        path_score = terminal_var[0][best_tag_id]
+
         best_path = [best_tag_id]
         for bptrs_t in reversed(backpointers):
             best_tag_id = bptrs_t[best_tag_id]
