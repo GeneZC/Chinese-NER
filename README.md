@@ -39,8 +39,6 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 ## Experiments
 
 ### Baseline
-- Environment and Consumption: python3.x, TensorFlow; Titan Xp, ~12h
-
 - RAW Corpus: 人民日报199801-词性标注
 
   ![Haha](https://raw.githubusercontent.com/GeneZC/Chinese-NER/master/figures/raw.png)
@@ -69,8 +67,6 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 | OVER ALL | 99.15% | 94.24% | 94.41% | 94.33 |
 
 ### Version 1
-- Environment and Consumption: python2.x, Pytorch; Titan Xp, ~12h
-
 - RAW Corpus: 人民日报199801-词性标注
 
 - Preprocessed(with iob as tag schema): SAME as baseline
