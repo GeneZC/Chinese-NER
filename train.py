@@ -6,6 +6,7 @@ import loader
 import torch
 import time
 import pickle
+import codecs
 from torch.autograd import Variable
 import sys
 from utils import *
@@ -193,7 +194,7 @@ def evaluating(model, datas, best_F):
     predf = eval_temp + '/pred.' + name
     scoref = eval_temp + '/score.' + name
 
-    with open(predf, 'w') as f:
+    with codecs.open(predf, 'w', encoding='utf8') as f:
         f.write('\n'.join(prediction))
 
     os.system('%s < %s > %s' % (eval_script, predf, scoref))
