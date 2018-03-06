@@ -71,7 +71,7 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 | PER | \ | 96.91% | 96.61% | 96.76 |
 | OVER ALL | 99.15% | 94.24% | 94.41% | 94.33 |
 
-### Version 1
+### Version 1 (Bi-LSTM + CRF + CHAR_CNN)
 - RAW Corpus: 人民日报199801-词性标注
 
 - Preprocessed(with iob as tag schema): SAME as baseline
@@ -95,3 +95,25 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 | ORG | \ | 88.76% | 89.45% | 89.10 |
 | PER | \ | 97.14% | 96.19% | 96.66 |
 | OVER ALL | 98.81% | 94.46% | 92.87% | 93.66 |
+
+### Version 2 (fastText)
+- SAME as Version 1 except word embedding is trained with fastText
+
+- Result(Test only)
+
+| Type | Accuracy | Precision | Recall | FB1 |
+| :-: | :-: | :-: | :-: | :-: |
+| LOC | \ | 95.01% | 91.76% | 93.36 |
+| ORG | \ | 88.76% | 89.45% | 89.10 |
+| PER | \ | 97.14% | 96.19% | 96.66 |
+| OVER ALL | 98.81% | 94.46% | 92.87% | 93.66 |
+
+### Version 3 (SeqGAN)
+- RAW Corpus: 人民日报199801-词性标注
+
+- Preprocessed(with iob as tag schema): SAME as baseline
+
+- Dataset split: SAME as baseline
+
+- Structure
+  > TO BE DONE...
