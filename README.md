@@ -103,10 +103,10 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
 | Type | Accuracy | Precision | Recall | FB1 |
 | :-: | :-: | :-: | :-: | :-: |
-| LOC | \ | 95.01% | 91.76% | 93.36 |
-| ORG | \ | 88.76% | 89.45% | 89.10 |
-| PER | \ | 97.14% | 96.19% | 96.66 |
-| OVER ALL | 98.81% | 94.46% | 92.87% | 93.66 |
+| LOC | \ | 94.34% | 92.16% | 93.24 |
+| ORG | \ | 88.03% | 83.74% | 85.83 |
+| PER | \ | 96.80% | 95.34% | 96.06 |
+| OVER ALL | 99.08% | 94.02% | 91.64% | 92.81 |
 
 ### Version 3 (SeqGAN)
 - RAW Corpus: 人民日报199801-词性标注
