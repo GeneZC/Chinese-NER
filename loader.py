@@ -82,6 +82,7 @@ def char_mapping(sentences):
     chars = ["".join([w[0] for w in s]) for s in sentences]
     dico = create_dico(chars)
     dico['<PAD>'] = 10000000
+    
     # dico[';'] = 0
     char_to_id, id_to_char = create_mapping(dico)
     print("Found %i unique characters" % len(dico))
@@ -126,7 +127,7 @@ def prepare_sentence(str_words, word_to_id, char_to_id, lower=False):
     def f(x): return x.lower() if lower else x
     words = [word_to_id[f(w) if f(w) in word_to_id else '<UNK>']
              for w in str_words]
-    chars = [[char_to_id[c] for c in w if c in char_to_id]
+    chars = [[char_to_id[c] for c in w if c in char_to_id ]
              for w in str_words]
     return {
         'str_words': str_words,

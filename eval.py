@@ -6,13 +6,18 @@ from torch.autograd import Variable
 from config import Config
 from utils import *
 from loader import *
+from model import BiLSTM_CRF
 import jieba
 jieba.initialize()
+
+model_name = os.path.join(models_path, Config.name) #get_name(parameters)
 
 mapping_file = Config.mapping_path
 
 with open(mapping_file, 'rb') as f:
-    mappings = pickle.load(f)
+    u = pickle._Unpickler(f)
+    u.encoding = 'latin1'
+    mappings = u.load()
 
 word_to_id = mappings['word_to_id']
 tag_to_id = mappings['tag_to_id']
@@ -26,8 +31,18 @@ use_gpu = torch.cuda.is_available()
 lower = parameters['lower']
 zeros = parameters['zeros']
 tag_scheme = parameters['tag_scheme']
-model = torch.load(models_path)
-model_name = models_path.split('/')[-1].split('.')[0]
+
+model = BiLSTM_CRF(vocab_size=len(word_to_id),
+                   tag_to_ix=tag_to_id,
+                   embedding_dim=parameters['word_dim'],
+                   hidden_dim=parameters['word_lstm_dim'],
+                   use_gpu=use_gpu,
+                   char_to_ix=char_to_id,
+                   pre_word_embeds=word_embeds,
+                   use_crf=parameters['crf'],
+                   char_mode=parameters['char_mode'])
+
+model.load_state_dict(torch.load(model_name, map_location=lambda storage, loc: storage))
 
 if use_gpu:
     model.cuda()
@@ -35,8 +50,9 @@ model.eval()
 
 def evaluate_line(model, sentence):
     prediction = []
-    seg = jieba.cut(sentence)
-    data = prepare_sentence(seg)
+    seg = jieba.lcut(sentence)
+    data = prepare_sentence(seg, word_to_id, char_to_id)
+    str_words = data['str_words']
     words = data['words']
     chars2 = data['chars']
     if parameters['char_mode'] == 'LSTM':
@@ -69,13 +85,13 @@ def evaluate_line(model, sentence):
     else:
         val, out = model(dwords, chars2_mask, chars2_length, d)
     predicted_id = out
-    for (word, true_id, pred_id) in zip(words, predicted_id):
+    for (word, pred_id) in zip(str_words, predicted_id):
         line = ' '.join([word, id_to_tag[pred_id]])
         prediction.append(line)
     for item in prediction:
         print(item)
 
-line = input('Please input a sentence.')
+line = input('Please input a sentence.\n')
 evaluate_line(model, line)
 
 
