@@ -1,3 +1,4 @@
 *.pyc
 *.out
 *.ner
+raw_corpus/

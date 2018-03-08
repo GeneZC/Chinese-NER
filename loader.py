@@ -53,6 +53,11 @@ def update_tag_scheme(sentences, tag_scheme):
             new_tags = iob_iobes(tags)
             for word, new_tag in zip(s, new_tags):
                 word[-1] = new_tag
+        elif tag_scheme == 'iobeslr':
+            new_tags = iob_iobes(tags)
+
+            for word, new_tag in zip(s, new_tags):
+                word[-1] = new_tag
         else:
             raise Exception('Unknown tagging scheme!')
 

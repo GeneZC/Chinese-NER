@@ -118,6 +118,33 @@ def iob_iobes(tags):
             raise Exception('Invalid IOB format!')
     return new_tags
 
+def iob_iobeslr(tags):
+    """
+        IOB -> IOBESLR
+    """
+    new_tags = []
+    for i, tag in enumerate(tags):
+        if tag == 'O':
+            if tags[i + 1].split('-')[0] == 'B':
+                new_tags.append('L-' + tags[i + 1].split('-')[1])
+            elif tags[i - 1].split('-')[0] == 'I':
+                new_tags.append('R-' + tags[i - 1].split('-')[1])
+            new_tags.append(tag)
+        elif tag.split('-')[0] == 'B':
+            if i + 1 != len(tags) and \
+                    tags[i + 1].split('-')[0] == 'I':
+                new_tags.append(tag)
+            else:
+                new_tags.append(tag.replace('B-', 'S-'))
+        elif tag.split('-')[0] == 'I':
+            if i + 1 < len(tags) and \
+                    tags[i + 1].split('-')[0] == 'I':
+                new_tags.append(tag)
+            else:
+                new_tags.append(tag.replace('I-', 'E-'))
+        else:
+            raise Exception('Invalid IOB format!')
+    return new_tags
 
 def iobes_iob(tags):
     """
@@ -184,8 +211,6 @@ def create_input(data, parameters, add_label, singletons=None):
     chars = data['chars']
     if singletons is not None:
         words = insert_singletons(words, singletons)
-    if parameters['cap_dim']:
-        caps = data['caps']
     char_for, char_rev, char_pos = pad_word_chars(chars)
     input = []
     if parameters['word_dim']:
@@ -195,8 +220,6 @@ def create_input(data, parameters, add_label, singletons=None):
         if parameters['char_bidirect']:
             input.append(char_rev)
         input.append(char_pos)
-    if parameters['cap_dim']:
-        input.append(caps)
     if add_label:
         input.append(data['tags'])
     return input
