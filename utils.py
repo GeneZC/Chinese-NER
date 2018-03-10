@@ -125,11 +125,12 @@ def iob_iobeslr(tags):
     new_tags = []
     for i, tag in enumerate(tags):
         if tag == 'O':
-            if tags[i + 1].split('-')[0] == 'B':
+            if i + 1 < len(tags) and tags[i + 1].split('-')[0] == 'B':
                 new_tags.append('L-' + tags[i + 1].split('-')[1])
             elif tags[i - 1].split('-')[0] == 'I':
                 new_tags.append('R-' + tags[i - 1].split('-')[1])
-            new_tags.append(tag)
+            else:
+                new_tags.append(tag)
         elif tag.split('-')[0] == 'B':
             if i + 1 != len(tags) and \
                     tags[i + 1].split('-')[0] == 'I':
@@ -288,4 +289,7 @@ def init_lstm(input_lstm):
                 weight.data.zero_()
                 weight.data[input_lstm.hidden_size: 2 * input_lstm.hidden_size] = 1
 
-
+if __name__ == '__main__':
+    tags = ['O','O','B-ORG','I-ORG','I-ORG','O','O']
+    newtags = iob_iobeslr(tags)
+    print(newtags)

@@ -13,18 +13,18 @@ def split_dataset(filename):
         lst = f.read().split('\n\n')
         length = len(lst)
         random.shuffle(lst)
-        train_lst = lst[:int(length/4)+int(length/2)]
-        val_lst = lst[int(length/2):int(length/4)+int(length/2)]
-        test_lst = lst[int(length/4)+int(length/2):]
-    with open('data/char_train.txt', 'w') as train:
+        train_lst = lst[:int(length*4/5)+int(length/10)]
+        val_lst = lst[int(length*4/5):int(length*4/5)+int(length/10)]
+        test_lst = lst[int(length*4/5)+int(length/10):]
+    with open('data/train.txt', 'w', encoding='utf-8') as train:
         for item in train_lst:
             train.write(item+'\n\n')
 
-    with open('data/char_val.txt', 'w') as val:
+    with open('data/val.txt', 'w', encoding='utf-8') as val:
         for item in val_lst:
             val.write(item+'\n\n')
 
-    with open('data/char_test.txt', 'w') as test:
+    with open('data/test.txt', 'w', encoding='utf-8') as test:
         for item in test_lst:
             test.write(item+'\n\n')       
 
@@ -194,6 +194,6 @@ def test():
 if __name__ == '__main__':
     # preprocess()
     # preprocess_char()
-    create_corpus('data/prepro.txt')
-    # split_dataset('data/prepro_char.txt')
+    # create_corpus('data/prepro.txt')
+    split_dataset('data/prepro.txt')
     # test()
