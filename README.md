@@ -50,15 +50,15 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
 - Preprocessed(with iob as tag schema) 
 
-  > 我 O
-  > 来 O
-  > 自 O
-  > 北 B-ORG
-  > 京 I-ORG
-  > 理 I-ORG
-  > 工 I-ORG
-  > 大 I-ORG
-  > 学 I-ORG
+  > 我 O  
+  > 来 O  
+  > 自 O  
+  > 北 B-ORG  
+  > 京 I-ORG  
+  > 理 I-ORG  
+  > 工 I-ORG  
+  > 大 I-ORG  
+  > 学 I-ORG  
 
 - Dataset split
   > 75% train, 25% test
@@ -84,11 +84,11 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
 - Preprocessed(with iob as tag schema):
 
-  > 我 O
-  > 来自 O
-  > 北京 B-ORG
-  > 理工 I-ORG
-  > 大学 I-ORG
+  > 我 O  
+  > 来自 O  
+  > 北京 B-ORG  
+  > 理工 I-ORG  
+  > 大学 I-ORG  
 
 - Dataset split: SAME as baseline
 
