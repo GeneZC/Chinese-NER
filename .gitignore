@@ -2,7 +2,6 @@
 *.out
 *.ner
 raw_corpus/
-data/
 embedding/
 eval/
 fastText/
