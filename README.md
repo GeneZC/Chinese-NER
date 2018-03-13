@@ -61,8 +61,8 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > 学 I-ORG  
 
 - Dataset split
-  > 75% train, 25% test
-  > 14384 / 4799 sentences in train / test.
+  > 75% train, 25% test  
+  > 14384 / 4799 sentences in train / test.  
   > tag schema: iobes
 
 - Structure
@@ -136,8 +136,8 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > 学 I-ORG  
 
 - Dataset split:
-  > 90% train, 10% test
-  > ~400000 / ~40000 sentences in train / test.
+  > 90% train, 10% test  
+  > ~400000 / ~40000 sentences in train / test.  
   > tag schema: iobeslr
 
 - Structure
