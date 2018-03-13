@@ -31,14 +31,14 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 - [RL-GAN For NLP: 强化学习在生成对抗网络文本生成中扮演的角色](http://www.zhuanzhi.ai/document/004615a522841d224fffcbb3abcb8213)
 ## Some Intuitions
 - '北理工' will be trained rather than '北'、'理'、'工' be separately pre-trained
-- using [fastText](https://github.com/facebookresearch/fastText)'s ideas: 
-  > so called sub-words, and not in character-level, in word-level instead.
-  > in Chinese, means different combinations of characters.
+- using [fastText](https://github.com/facebookresearch/fastText)'s ideas:
+  > so called sub-words, and not in character-level, in word-level instead.  
+  > in Chinese, means different combinations of characters.  
   > for example, in a word embedding '北理工', \['北','理','工','北理','理工'\] will be considered differently
 - or, using CNN layer to capture features above
 - futhermore, I found that simplified version of organization or localization names are hard to capture
-  > such as '央视' which represents '中央电视台'.
-  > it might be the problem of pretrained corpus
+  > such as '央视' which represents '中央电视台'.  
+  > it might be the problem of pretrained corpus  
   > or we should come up with a solution to solve this
 
 ## Experiments
@@ -63,6 +63,7 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 - Dataset split
   > 75% train, 25% test
   > 14384 / 4799 sentences in train / test.
+  > tag schema: iobes
 
 - Structure
   > - with pretrained GloVe embedding for characters and random initialized embedding for segmentations
@@ -120,7 +121,37 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 | PER | \ | 96.80% | 95.34% | 96.06 |
 | OVER ALL | 99.08% | 94.02% | 91.64% | 92.81 |
 
-### Version 3 (SeqGAN)
+### Version 3 (Bi-LSTM + CRF + CHAR_CNN)
+- RAW Corpus: 人民日报1998-词性标注 and 人民日报2002-词性标注
+
+- Preprocessed(with iob as tag schema):
+
+  > 我 O  
+  > 来自 O  
+  > 北 B-ORG  
+  > 京 I-ORG  
+  > 理 I-ORG  
+  > 工 I-ORG  
+  > 大 I-ORG  
+  > 学 I-ORG  
+
+- Dataset split:
+  > 90% train, 10% test
+  > ~400000 / ~40000 sentences in train / test.
+  > tag schema: iobeslr
+
+- Structure
+  > - with pretrained GloVe embedding for words and random initialized embedding for characters
+  > - use a layer of maxpooled CNN to capture the features of characters projected by embedding
+  > - concatenate word-level input and above one
+  > - Bi-LSTM
+  > - CRF loss layer
+  
+- Result(Test only)
+
+Still under training
+
+### Version 4 (SeqGAN)
 - RAW Corpus: 人民日报199801-词性标注
 
 - Preprocessed(with iob as tag schema): SAME as baseline

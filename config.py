@@ -23,4 +23,4 @@ class Config():
     loss_file = "loss.txt"
     name = 'ner'
     char_mode = 'CNN'
-    reload = False
+    reuse = False
