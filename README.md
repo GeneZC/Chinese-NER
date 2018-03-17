@@ -149,7 +149,16 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   
 - Result(Test only)
 
-Still under training
+| Type | Accuracy | Precision | Recall | FB1 |
+| :-: | :-: | :-: | :-: | :-: |
+| LOC | \ | 87.82% | 91.46% | 89.60 |
+| ORG | \ | 92.45% | 94.27% | 93.35 |
+| PER | \ | 92.27% | 92.97% | 92.62 |
+| OVER ALL | 98.59% | 90.58% | 92.76% | 91.66 |
+
+- Problem
+  > L and R tags are not concerned with the words themsleves (even space), not intuitive enough  
+  > L and R tags may be overlap
 
 ### Version 4 (SeqGAN)
 - RAW Corpus: 人民日报199801-词性标注
