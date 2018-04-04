@@ -21,6 +21,6 @@ class Config():
     dropout = 0.5 # dropout rate
     lr = 0.002 # learning rate
     loss_file = "loss.txt"
-    name = 'ner'
+    name = 'ner_lr'
     char_mode = 'CNN'
     reuse = False

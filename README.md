@@ -29,6 +29,7 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 - [Adversarial Learning for Chinese NER from Crowd Annotations](https://arxiv.org/pdf/1801.05147.pdf)
   > - 2018 AAAI Alibaba
 - [RL-GAN For NLP: 强化学习在生成对抗网络文本生成中扮演的角色](http://www.zhuanzhi.ai/document/004615a522841d224fffcbb3abcb8213)
+
 ## Some Intuitions
 - '北理工' will be trained rather than '北'、'理'、'工' be separately pre-trained
 - using [fastText](https://github.com/facebookresearch/fastText)'s ideas:
@@ -40,6 +41,24 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > such as '央视' which represents '中央电视台'.  
   > it might be the problem of pretrained corpus  
   > or we should come up with a solution to solve this
+
+## Usage
+
+1. Preprocess the dataset, whose format should be the same as the examples in /data. And the code in preprocess.py shall be considered as refernce.
+2. Yield a embedding with Glove or fastText. Refer to the README in /Glove and /fastText to gain an intuition.
+3. Modify config.py to get a brand new config suitting your idea.
+4. Train your own model by  
+```bash
+python train.py
+```
+5. Evaluate the outcome of your model by  
+```bash
+python eval.py
+```
+
+## Contributions
+
+If you have any question about this repo or there exists some bugs of my code, please feel free to contact with me via email or just give comments in Issues
 
 ## Experiments
 
@@ -161,11 +180,16 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > L and R tags may be overlap
 
 ### Version 4 (SeqGAN)
-- RAW Corpus: 人民日报199801-词性标注
+- RAW Corpus: MSRA
 
 - Preprocessed(with iob as tag schema): SAME as baseline
 
 - Dataset split: SAME as baseline
 
 - Structure
-  > TO BE DONE...
+  > See SeqGAN
+
+- Result(Test only)
+
+It didn't work as expected, which could almost reach 80 F1 score, though, costing a much longer time...
+
