@@ -49,7 +49,7 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 3. Modify configurations in main.py to get a brand new config suiting your idea.
 4. Train your own model by  
 ```bash
-python main.py --train==True --clean==True
+python main.py --train=True --clean=True
 ```
 5. Evaluate the outcome of your model by  
 ```bash
@@ -90,10 +90,10 @@ If you have any question about this repo or there exists some bugs of my code, p
 
   | Type | Accuracy | Precision | Recall | FB1 |
   | :-: | :-: | :-: | :-: | :-: |
-  | LOC | \ | 93.15% | 93.60% | 93.38 |
-  | ORG | \ | 91.45% | 91.89% | 91.67 |
-  | PER | \ | 96.91% | 96.61% | 96.76 |
-  | OVER ALL | 99.15% | 94.24% | 94.41% | 94.33 |
+  | LOC | \ | 94.11% | 90.58% | 92.31 |
+  | ORG | \ | 86.86% | 88.43% | 87.64 |
+  | PER | \ | 92.21% | 92.45% | 92.33 |
+  | OVER ALL | 98.79% | 91.89% | 90.71% | 91.30 |
 
 ### Version 1 (Bi-LSTM + CRF + CHAR_CNN)
 - Corpus: SAME as baseline
