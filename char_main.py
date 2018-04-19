@@ -129,7 +129,7 @@ def train():
         else:
             _w, word_to_id, id_to_word = word_mapping(train_sentences, FLAGS.lower)
         # create dictionary for character
-        
+
         if FLAGS.pre_emb:
             dico_chars_train = char_mapping(train_sentences, FLAGS.lower)[0]
             dico_chars, char_to_id, id_to_char = augment_with_pretrained(
@@ -142,10 +142,10 @@ def train():
         # Create a dictionary and a mapping for tags
         _t, tag_to_id, id_to_tag = tag_mapping(train_sentences)
         with open(FLAGS.map_file, "wb") as f:
-            pickle.dump([char_to_id, id_to_char, tag_to_id, id_to_tag], f)
+            pickle.dump([word_to_id, id_to_word, char_to_id, id_to_char, tag_to_id, id_to_tag], f)
     else:
         with open(FLAGS.map_file, "rb") as f:
-            char_to_id, id_to_char, tag_to_id, id_to_tag = pickle.load(f)
+            word_to_id, id_to_word, char_to_id, id_to_char, tag_to_id, id_to_tag = pickle.load(f)
 
     # prepare data, get a collection of list containing index
     train_data = prepare_dataset(
