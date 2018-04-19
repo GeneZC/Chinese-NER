@@ -19,7 +19,7 @@ flags = tf.app.flags
 flags.DEFINE_boolean("clean",       False,      "clean train folder")
 flags.DEFINE_boolean("train",       False,      "Wither train the model")
 # configurations for the model
-flags.DEFINE_integer("seg_dim",     20,         "Embedding size for segmentation, 0 if not used")
+flags.DEFINE_integer("seg_dim",     0,         "Embedding size for segmentation, 0 if not used")
 flags.DEFINE_integer("char_dim",    100,        "Embedding size for characters")
 flags.DEFINE_integer("lstm_dim",    100,        "Num of hidden units in LSTM")
 flags.DEFINE_string("tag_schema",   "iobes",    "tagging schema iobes or iob")
@@ -136,13 +136,13 @@ def train():
 
     # prepare data, get a collection of list containing index
     train_data = prepare_dataset(
-        train_sentences, char_to_id, tag_to_id, FLAGS.lower
+        train_sentences, char_to_id, tag_to_id, FLAGS.lower, FLAGS.seg_dim
     )
     dev_data = prepare_dataset(
-        dev_sentences, char_to_id, tag_to_id, FLAGS.lower
+        dev_sentences, char_to_id, tag_to_id, FLAGS.lower, FLAGS.seg_dim
     )
     test_data = prepare_dataset(
-        test_sentences, char_to_id, tag_to_id, FLAGS.lower
+        test_sentences, char_to_id, tag_to_id, FLAGS.lower, FLAGS.seg_dim
     )
     print("%i / %i / %i sentences in train / dev / test." % (
         len(train_data), 0, len(test_data)))

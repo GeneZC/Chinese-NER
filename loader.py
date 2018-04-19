@@ -66,7 +66,15 @@ def char_mapping(sentences, lower):
     """
     Create a dictionary and a mapping of characters, sorted by frequency.
     """
-    chars = [[x[0].lower() if lower else x[0] for x in s] for s in sentences]
+    words = [[x[0] for x in s] for s in sentences]
+    chars = []
+    for s in words:
+        char = []
+        for word in s:
+            for c in word:
+                char.append(c.lower() if lower else c)
+        chars.append(char)
+
     dico = create_dico(chars)
     dico["<PAD>"] = 10000001
     dico['<UNK>'] = 10000000
@@ -87,7 +95,7 @@ def tag_mapping(sentences):
     return dico, tag_to_id, id_to_tag
 
 
-def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True):
+def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True, seg=True):
     """
     Prepare the dataset. Return a list of lists of dictionaries containing:
         - word indexes
@@ -104,7 +112,10 @@ def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True):
         string = [w[0] for w in s]
         chars = [char_to_id[f(w) if f(w) in char_to_id else '<UNK>']
                  for w in string]
-        segs = get_seg_features("".join(string))
+        if seg:
+            segs = get_seg_features("".join(string))
+        else:
+            segs = []
         if train:
             tags = [tag_to_id[w[-1]] for w in s]
         else:
@@ -140,12 +151,13 @@ def augment_with_pretrained(dictionary, ext_emb_path, chars=None):
                 dictionary[char] = 0
     else:
         for char in chars:
-            if any(x in pretrained for x in [
-                char,
-                char.lower(),
-                re.sub('\d', '0', char.lower())
-            ]) and char not in dictionary:
-                dictionary[char] = 0
+            for c in char:
+                if any(x in pretrained for x in [
+                    c,
+                    c.lower(),
+                    re.sub('\d', '0', c.lower())
+                ]) and c not in dictionary:
+                    dictionary[c] = 0
 
     word_to_id, id_to_word = create_mapping(dictionary)
     return dictionary, word_to_id, id_to_word
