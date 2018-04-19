@@ -2,7 +2,7 @@
 # author: Gene_ZC
 
 import codecs
-# import gensim
+import gensim
 import random
 import os
 import pynlpir
@@ -70,12 +70,12 @@ def preprocess(filename):
     f_save.close()
 
 def test():
-    model = gensim.models.KeyedVectors.load_word2vec_format('embedding/fasttext_vec.txt', binary=False)
-    sim = model.most_similar('haha', topn=10)
+    model = gensim.models.KeyedVectors.load_word2vec_format('fastText/vectors.txt', binary=False)
+    sim = model.most_similar('北京理工大学', topn=10)
     print(sim)
 
 if __name__ == '__main__':
     # preprocess('data/testright1.txt')
-    create_corpus('data/char_train.txt')
+    # create_corpus('data/char_train.txt')
     # make_dev('data/char_train.txt')
-    # test()
+    test()
