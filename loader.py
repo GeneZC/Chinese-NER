@@ -62,20 +62,40 @@ def update_tag_scheme(sentences, tag_scheme):
             raise Exception('Unknown tagging scheme!')
 
 
-def char_mapping(sentences, lower):
+def word_mapping(sentences, lower):
     """
     Create a dictionary and a mapping of words, sorted by frequency.
     """
-    chars = [[x[0].lower() if lower else x[0] for x in s] for s in sentences]
+    words = [[x[0].lower() if lower else x[0] for x in s] for s in sentences]
+    dico = create_dico(words)
+    dico["<PAD>"] = 10000001
+    dico['<UNK>'] = 10000000
+    word_to_id, id_to_word = create_mapping(dico)
+    print("Found %i unique words (%i in total)" % (
+        len(dico), sum(len(x) for x in words)
+    ))
+    return dico, word_to_id, id_to_word
+
+def char_mapping(sentences, lower):
+    """
+    Create a dictionary and a mapping of characters, sorted by frequency.
+    """
+    words = [[x[0] for x in s] for s in sentences]
+    chars = []
+    for s in words:
+        char = []
+        for word in s:
+            for c in word:
+                char.append(c.lower() if lower else c)
+        chars.append(char) 
     dico = create_dico(chars)
     dico["<PAD>"] = 10000001
     dico['<UNK>'] = 10000000
     char_to_id, id_to_char = create_mapping(dico)
-    print("Found %i unique words (%i in total)" % (
+    print("Found %i unique characterss (%i in total)" % (
         len(dico), sum(len(x) for x in chars)
     ))
     return dico, char_to_id, id_to_char
-
 
 def tag_mapping(sentences):
     """
@@ -115,7 +135,7 @@ def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True):
     return data
 
 
-def augment_with_pretrained(dictionary, ext_emb_path, chars):
+def augment_with_pretrained(dictionary, ext_emb_path, chars=None):
     """
     Augment the dictionary with words that have a pretrained embedding.
     If `words` is None, we add every word that has a pretrained embedding
