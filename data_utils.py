@@ -3,7 +3,7 @@ import re
 import math
 import codecs
 import random
-
+import itertools
 import numpy as np
 import jieba
 jieba.initialize()
@@ -295,6 +295,7 @@ class BatchManager(object):
 
     @staticmethod
     def pad_data(data):
+        threshold = 6
         strings = []
         chars = []
         segs = []
@@ -304,7 +305,15 @@ class BatchManager(object):
             string, char, seg, target = line
             padding = [0] * (max_length - len(string))
             strings.append(string + padding)
-            chars.append(char + padding)
+            char = char + [[0]] * (max_length - len(string))
+            char_mask = [] 
+            for c in char:
+                if len(c) <= threshold:
+                    b = c + [0] * (threshold - len(c))
+                else:
+                    b = c[:threshold]
+                char_mask.append(b)
+            chars.append(char_mask)
             segs.append(seg + padding)
             targets.append(target + padding)
         return [strings, chars, segs, targets]

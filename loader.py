@@ -110,16 +110,16 @@ def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True, s
     data = []
     for s in sentences:
         string = [w[0] for w in s]
-        chars = [char_to_id[f(w) if f(w) in char_to_id else '<UNK>']
+        chars = [[char_to_id[f(c) if f(c) in char_to_id else '<UNK>'] for c in w]
                  for w in string]
         if seg:
             segs = get_seg_features("".join(string))
         else:
-            segs = []
+            segs = [-1 for _ in s]
         if train:
             tags = [tag_to_id[w[-1]] for w in s]
         else:
-            tags = [none_index for _ in chars]
+            tags = [none_index for _ in s]
         data.append([string, chars, segs, tags])
 
     return data

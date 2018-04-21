@@ -78,7 +78,7 @@ If you have any question about this repo or there exists some bugs of my code, p
   > 学 E-ORG  
 
 - Dataset split
-  > 90% train, 15% test 
+  > 90% train, 10% test 
 
 - Structure
   > - with pretrained GloVe embedding for characters and random initialized embedding for segmentations
@@ -98,14 +98,19 @@ If you have any question about this repo or there exists some bugs of my code, p
 ### Version 1 (Bi-LSTM + CRF + CHAR_CNN)
 - Corpus: SAME as baseline
 
-- Tag schema: Same as baseline
+- Tag schema: iobes
+
+  > 我 S-PER  
+  > 来自 O  
+  > 北京 B-ORG  
+  > 理工 I-ORG  
+  > 大学 E-ORG
 
 - Dataset split: SAME as baseline
 
 - Structure
-  > - with pretrained GloVe embedding for words and random initialized embedding for characters
-  > - use a layer of maxpooled CNN to capture the features of characters projected by embedding
-  > - concatenate word-level input and above one
+  > - with pretrained GloVe embedding for characterss
+  > - use a layer of CNN to capture the features of characters projected by embedding
   > - Bi-LSTM
   > - CRF loss layer
   
@@ -113,10 +118,10 @@ If you have any question about this repo or there exists some bugs of my code, p
 
   | Type | Accuracy | Precision | Recall | FB1 |
   | :-: | :-: | :-: | :-: | :-: |
-  | LOC | \ | 95.01% | 91.76% | 93.36 |
-  | ORG | \ | 88.76% | 89.45% | 89.10 |
-  | PER | \ | 97.14% | 96.19% | 96.66 |
-  | OVER ALL | 98.81% | 94.46% | 92.87% | 93.66 |
+  | LOC | \ | 93.31% | 91.14% | 92.21 |
+  | ORG | \ | 87.15% | 86.63% | 86.89 |
+  | PER | \ | 93.94% | 91.94% | 92.93 |
+  | OVER ALL | 98.83% | 92.17% | 90.42% | 91.29 |
 
 ### Version 2 (SeqGAN)
 - Corpus: MSRA

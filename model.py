@@ -44,17 +44,22 @@ class Model(object):
         self.dropout = tf.placeholder(dtype=tf.float32,
                                       name="Dropout")
 
-        used = tf.sign(tf.abs(self.char_inputs))
-        length = tf.reduce_sum(used, reduction_indices=1)
+        used = tf.abs(self.char_inputs)
+        temp = tf.sign(tf.reduce_sum(used, reduction_indices=2))
+        length = tf.reduce_sum(temp, reduction_indices=1)
         self.lengths = tf.cast(length, tf.int32)
         self.batch_size = tf.shape(self.char_inputs)[0]
-        self.num_steps = tf.shape(self.char_inputs)[-1]
+        self.num_steps = tf.shape(self.char_inputs)[1]
+        self.word_size = 6
 
         # embeddings for chinese character and segmentation representation
         embedding = self.embedding_layer(self.char_inputs, self.seg_inputs, config)
 
         # apply dropout before feed to lstm layer
-        lstm_inputs = tf.nn.dropout(embedding, self.dropout)
+        dropout_inputs  = tf.nn.dropout(embedding, self.dropout)
+
+        # character convolutional neural network
+        lstm_inputs = self.char_cnn_layer(dropout_inputs)
 
         # bi-directional lstm layer
         lstm_outputs = self.biLSTM_layer(lstm_inputs, self.lstm_dim, self.lengths)
@@ -109,6 +114,27 @@ class Model(object):
                     embedding.append(tf.nn.embedding_lookup(self.seg_lookup, seg_inputs))
             embed = tf.concat(embedding, axis=-1)
         return embed
+
+    def char_cnn_layer(self, dropout_inputs, name=None):
+        """
+        :param dropout_inputs: [batch_size, num_steps, word_size, emb_size]
+        :return: [batch_size, num_steps, emb_size]
+        """
+        with tf.variable_scope("char_CNN" if not name else name):
+            self.W = tf.get_variable(
+                    name="char_cnn_W",
+                    shape=[1, self.word_size, self.char_dim, self.char_dim],
+                    initializer=self.initializer)
+            self.b = tf.Variable(tf.constant(0.1, shape=self.char_dim), name="b")
+            self.conv = tf.nn.conv2d(
+                        dropout_inputs,
+                        self.W,
+                        strides=[1, 1, 1, 1],
+                        padding="VALID",
+                        name="conv") 
+            h = tf.nn.relu(tf.nn.bias_add(self.conv, self.b), name="relu")
+            h = tf.squeeze(h, axis=2)
+        return h
 
     def biLSTM_layer(self, lstm_inputs, lstm_dim, lengths, name=None):
         """
