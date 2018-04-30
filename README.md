@@ -66,7 +66,6 @@ If you have any question about this repo or there exists some bugs of my code, p
 - Corpus: MSRA (Bakeoff 2006)
 
 - Tag schema: iobes
-
   > 我 S-PER  
   > 来 O  
   > 自 O  
@@ -99,7 +98,6 @@ If you have any question about this repo or there exists some bugs of my code, p
 - Corpus: SAME as baseline
 
 - Tag schema: iobes
-
   > 我 S-PER  
   > 来自 O  
   > 北京 B-ORG  
@@ -135,5 +133,6 @@ If you have any question about this repo or there exists some bugs of my code, p
 
 - Result(Test only)
 
-  It didn't work as expected, which could almost reach 80 F1 score, though, costing a much longer time...
+  It didn't work as expected, which could almost reach 80 F1 score, though, costing much longer time ...  
+  It seems that Bi-LSTM + CRF Loss is good enough for NER task, and it's difficult for Adverserial learning to yield a result on par with it. So I don't think I should continue.
 
