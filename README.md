@@ -44,7 +44,7 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 
 ## Usage
 
-1. Preprocess the dataset, whose format should be the same as the examples in /data. And the code in preprocess.py shall be considered as refernce.
+1. Preprocess the dataset, whose format should be the same as the examples in /data (in which the *train1.txt* and *testright1.txt* are raw data from MSRA in our experiments). And the code in preprocess.py shall be considered as refernce.
 2. Yield a embedding with Glove or fastText. Refer to the README in /Glove and /fastText to gain an intuition.
 3. Modify configurations in main.py to get a brand new config suiting your idea.
 4. Train your own model by  
