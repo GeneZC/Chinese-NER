@@ -30,11 +30,11 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > - 2018 AAAI Alibaba
 - [RL-GAN For NLP: 强化学习在生成对抗网络文本生成中扮演的角色](http://www.zhuanzhi.ai/document/004615a522841d224fffcbb3abcb8213)
 
-## Some Intuitions
+## Intuitions
 - '北理工' will be trained rather than '北'、'理'、'工' be separately pre-trained
 - using [fastText](https://github.com/facebookresearch/fastText)'s ideas:
-  > so called sub-words, and not in character-level, in word-level instead.  
-  > in Chinese, means different combinations of characters.  
+  > so called sub-words.  
+  > in Chinese, it means different combinations of characters.  
   > for example, in a word embedding '北理工', \['北','理','工','北理','理工'\] will be considered differently
 - or, using CNN layer to capture features above
 - futhermore, I found that simplified version of organization or localization names are hard to capture
@@ -42,8 +42,13 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > it might be the problem of pretrained corpus  
   > or we should come up with a solution to solve this
 
-## Usage
+## Requirement
+- Tensorflow
+- pynlpir
+- jieba
 
+## Usage
+Note: Current repo only contains *Version 1* which is discussed in **Experiment**
 1. Preprocess the dataset, whose format should be the same as the examples in /data (in which the *train1.txt* and *testright1.txt* are raw data from MSRA in our experiments). And the code in preprocess.py shall be considered as refernce.
 2. Yield a embedding with Glove or fastText. Refer to the README in /Glove and /fastText to gain an intuition.
 3. Modify configurations in main.py to get a brand new config suiting your idea.
@@ -58,7 +63,7 @@ python main.py
 
 ## Contributions
 
-If you have any question about this repo or there exists some bugs of my code, please feel free to contact with me via email or just give comments in Issues
+If you have any question about this repo or there exists some bugs, please feel free to contact with me via email or just give comments in Issues
 
 ## Experiments
 
