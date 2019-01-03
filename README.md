@@ -30,28 +30,16 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
   > - 2018 AAAI Alibaba
 - [RL-GAN For NLP: 强化学习在生成对抗网络文本生成中扮演的角色](http://www.zhuanzhi.ai/document/004615a522841d224fffcbb3abcb8213)
 
-## Intuitions
-- '北理工' will be trained rather than '北'、'理'、'工' be separately pre-trained
-- using [fastText](https://github.com/facebookresearch/fastText)'s ideas:
-  > so called sub-words.  
-  > in Chinese, it means different combinations of characters.  
-  > for example, in a word embedding '北理工', \['北','理','工','北理','理工'\] will be considered differently
-- or, using CNN layer to capture features above
-- futhermore, I found that simplified version of organization or localization names are hard to capture
-  > such as '央视' which represents '中央电视台'.  
-  > it might be the problem of pretrained corpus  
-  > or we should come up with a solution to solve this
-
 ## Requirement
 - Tensorflow
 - pynlpir
 - jieba
 
 ## Usage
-Note: Current repo only contains *Version 1* which is discussed in **Experiment**
-1. Preprocess the dataset, whose format should be the same as the examples in /data (in which the *train1.txt* and *testright1.txt* are raw data from MSRA in our experiments). And the code in preprocess.py shall be considered as refernce.
-2. Yield a embedding with Glove or fastText. Refer to the README in /Glove and /fastText to gain an intuition.
-3. Modify configurations in main.py to get a brand new config suiting your idea.
+Note: Current repo only contains *Version 1* which is discussed in **Experiments**, but you could easily modify the cofigurations in *main.py* to have the *Baseline* set in **Experiments**
+1. Preprocess the dataset, whose format should be the same as the examples in */data*. And the code in preprocess.py shall be considered as the refernce.
+2. Yield a embedding with Glove or fastText. Refer to the *README.md* in */Glove* and */fastText* to gain an intuition.
+3. Modify configurations in *main.py* to get a brand new config suiting your idea.
 4. Train your own model by  
 ```bash
 python main.py --train=True --clean=True
@@ -63,12 +51,12 @@ python main.py
 
 ## Contributions
 
-If you have any question about this repo or there exists some bugs, please feel free to contact with me via email or just give comments in Issues
+If you have any question about this repo or you find some problems in my code, feel free to contact with me via email or just give comments in *Issues*.
 
 ## Experiments
 
 ### Baseline
-- Corpus: MSRA (Bakeoff 2006)
+- Corpus: MSRA
 
 - Tag schema: iobes
   > 我 S-PER  
@@ -112,7 +100,7 @@ If you have any question about this repo or there exists some bugs, please feel 
 - Dataset split: SAME as baseline
 
 - Structure
-  > - with pretrained GloVe embedding for characterss
+  > - with pretrained GloVe embedding for words
   > - use a layer of CNN to capture the features of characters projected by embedding
   > - Bi-LSTM
   > - CRF loss layer
@@ -125,19 +113,3 @@ If you have any question about this repo or there exists some bugs, please feel 
   | ORG | \ | 87.15% | 86.63% | 86.89 |
   | PER | \ | 93.94% | 91.94% | 92.93 |
   | OVER ALL | 98.83% | 92.17% | 90.42% | 91.29 |
-
-### Version 2 (SeqGAN)
-- Corpus: MSRA
-
-- Tag schema: SAME as baseline
-
-- Dataset split: SAME as baseline
-
-- Structure
-  > See SeqGAN
-
-- Result(Test only)
-
-  It didn't work as expected, which could almost reach 80 F1 score, though, costing much longer time ...  
-  It seems that Bi-LSTM + CRF Loss is good enough for NER task, and it's difficult for Adverserial learning to yield a result on par with it. So I don't think I should continue.
-

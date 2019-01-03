@@ -45,9 +45,9 @@ flags.DEFINE_string("config_file",  "config_file",  "File for config")
 flags.DEFINE_string("script",       "conlleval",    "evaluation script")
 flags.DEFINE_string("result_path",  "result",       "Path for results")
 flags.DEFINE_string("emb_file",     "vectors.txt", "Path for pre_trained embedding")
-flags.DEFINE_string("train_file",   os.path.join("data", "train.txt"),  "Path for train data")
-flags.DEFINE_string("dev_file",     os.path.join("data", "dev.txt"),    "Path for dev data")
-flags.DEFINE_string("test_file",    os.path.join("data", "test.txt"),   "Path for test data")
+flags.DEFINE_string("train_file",   os.path.join("data", "char_train.txt"),  "Path for train data")
+flags.DEFINE_string("dev_file",     os.path.join("data", "char_dev.txt"),    "Path for dev data")
+flags.DEFINE_string("test_file",    os.path.join("data", "char_test.txt"),   "Path for test data")
 
 
 FLAGS = tf.app.flags.FLAGS
