@@ -87,39 +87,6 @@ def make_path(params):
         os.makedirs("log")
 
 
-def clean(params):
-    """
-    Clean current folder
-    remove saved model and training log
-    """
-    if os.path.isfile(params.vocab_file):
-        os.remove(params.vocab_file)
-
-    if os.path.isfile(params.map_file):
-        os.remove(params.map_file)
-
-    if os.path.isdir(params.ckpt_path):
-        shutil.rmtree(params.ckpt_path)
-
-    if os.path.isdir(params.summary_path):
-        shutil.rmtree(params.summary_path)
-
-    if os.path.isdir(params.result_path):
-        shutil.rmtree(params.result_path)
-
-    if os.path.isdir("log"):
-        shutil.rmtree("log")
-
-    if os.path.isdir("__pycache__"):
-        shutil.rmtree("__pycache__")
-
-    if os.path.isfile(params.config_file):
-        os.remove(params.config_file)
-
-    if os.path.isfile(params.vocab_file):
-        os.remove(params.vocab_file)
-
-
 def save_config(config, config_file):
     """
     Save configuration of the model

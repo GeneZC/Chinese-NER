@@ -38,11 +38,11 @@ with Word Segmentation Representation Learning](http://anthology.aclweb.org/P/P1
 ## Usage
 Note: Current repo only contains *Version 1* which is discussed in **Experiments**, but you could easily modify the cofigurations in *main.py* to have the *Baseline* set in **Experiments**
 1. Preprocess the dataset, whose format should be the same as the examples in */data*. And the code in preprocess.py shall be considered as the refernce.
-2. Yield a embedding with Glove or fastText. Refer to the *README.md* in */Glove* and */fastText* to gain an intuition.
+2. Yield a character-level embedding with Glove or fastText. Refer to the *README.md* in */Glove* and */fastText* to gain an intuition.
 3. Modify configurations in *main.py* to get a brand new config suiting your idea.
 4. Train your own model by  
 ```bash
-python main.py --train=True --clean=True
+python main.py --train=True
 ```
 5. Evaluate the outcome of your model by  
 ```bash

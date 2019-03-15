@@ -3,7 +3,7 @@ import re
 import codecs
 
 from data_utils import create_dico, create_mapping, zero_digits
-from data_utils import iob2, iob_iobes, get_seg_features
+from data_utils import iob2, iob_iobes
 
 
 def load_sentences(path, lower, zeros):
@@ -15,13 +15,11 @@ def load_sentences(path, lower, zeros):
     sentence = []
     num = 0
     for line in codecs.open(path, 'r', 'utf8'):
-        num+=1
+        num += 1
         line = zero_digits(line.rstrip()) if zeros else line.rstrip()
-        # print(list(line))
         if not line:
             if len(sentence) > 0:
-                if 'DOCSTART' not in sentence[0][0]:
-                    sentences.append(sentence)
+                sentences.append(sentence)
                 sentence = []
         else:
             if line[0] == " ":
@@ -29,12 +27,11 @@ def load_sentences(path, lower, zeros):
                 word = line.split()
                 # word[0] = " "
             else:
-                word= line.split()
+                word = line.split()
             assert len(word) >= 2, print([word[0]])
             sentence.append(word)
     if len(sentence) > 0:
-        if 'DOCSTART' not in sentence[0][0]:
-            sentences.append(sentence)
+        sentences.append(sentence)
     return sentences
 
 
@@ -112,15 +109,11 @@ def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True, s
         string = [w[0] for w in s]
         chars = [[char_to_id[f(c) if f(c) in char_to_id else '<UNK>'] for c in w]
                  for w in string]
-        if seg:
-            segs = get_seg_features("".join(string))
-        else:
-            segs = [-1 for _ in s]
         if train:
             tags = [tag_to_id[w[-1]] for w in s]
         else:
             tags = [none_index for _ in s]
-        data.append([string, chars, segs, tags])
+        data.append([string, chars, tags])
 
     return data
 
@@ -159,24 +152,6 @@ def augment_with_pretrained(dictionary, ext_emb_path, chars=None):
                 ]) and c not in dictionary:
                     dictionary[c] = 0
 
-    word_to_id, id_to_word = create_mapping(dictionary)
-    return dictionary, word_to_id, id_to_word
-
-
-def save_maps(save_path, *params):
-    """
-    Save mappings and invert mappings
-    """
-    pass
-    # with codecs.open(save_path, "w", encoding="utf8") as f:
-    #     pickle.dump(params, f)
-
-
-def load_maps(save_path):
-    """
-    Load mappings from the file
-    """
-    pass
-    # with codecs.open(save_path, "r", encoding="utf8") as f:
-    #     pickle.load(save_path, f)
+    char_to_id, id_to_char = create_mapping(dictionary)
+    return dictionary, char_to_id, id_to_char
 

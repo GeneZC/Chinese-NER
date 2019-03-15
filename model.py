@@ -17,11 +17,9 @@ class Model(object):
         self.lr = config["lr"]
         self.char_dim = config["char_dim"]
         self.lstm_dim = config["lstm_dim"]
-        self.seg_dim = config["seg_dim"]
 
         self.num_tags = config["num_tags"]
         self.num_chars = config["num_chars"]
-        self.num_segs = 4
 
         self.global_step = tf.Variable(0, trainable=False)
         self.best_dev_f1 = tf.Variable(0.0, trainable=False)
@@ -33,9 +31,6 @@ class Model(object):
         self.char_inputs = tf.placeholder(dtype=tf.int32,
                                           shape=[None, None, None],
                                           name="ChatInputs")
-        self.seg_inputs = tf.placeholder(dtype=tf.int32,
-                                         shape=[None, None],
-                                         name="SegInputs")
 
         self.targets = tf.placeholder(dtype=tf.int32,
                                       shape=[None, None],
@@ -53,7 +48,7 @@ class Model(object):
         self.word_size = 6
 
         # embeddings for chinese character and segmentation representation
-        embedding = self.embedding_layer(self.char_inputs, self.seg_inputs, config)
+        embedding = self.embedding_layer(self.char_inputs, config)
 
         # apply dropout before feed to lstm layer
         dropout_inputs  = tf.nn.dropout(embedding, self.dropout)
@@ -90,7 +85,7 @@ class Model(object):
         # saver of the model
         self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=5)
 
-    def embedding_layer(self, char_inputs, seg_inputs, config, name=None):
+    def embedding_layer(self, char_inputs, config, name=None):
         """
         :param char_inputs: one-hot encoding of sentence
         :param seg_inputs: segmentation feature
@@ -105,13 +100,6 @@ class Model(object):
                     shape=[self.num_chars, self.char_dim],
                     initializer=self.initializer)
             embedding.append(tf.nn.embedding_lookup(self.char_lookup, char_inputs))
-            if config["seg_dim"]:
-                with tf.variable_scope("seg_embedding"), tf.device('/cpu:0'):
-                    self.seg_lookup = tf.get_variable(
-                        name="seg_embedding",
-                        shape=[self.num_segs, self.seg_dim],
-                        initializer=self.initializer)
-                    embedding.append(tf.nn.embedding_lookup(self.seg_lookup, seg_inputs))
             embed = tf.concat(embedding, axis=-1)
         return embed
 
@@ -125,7 +113,7 @@ class Model(object):
                     name="char_cnn_W",
                     shape=[1, self.word_size, self.char_dim, self.char_dim],
                     initializer=self.initializer)
-            self.b = tf.Variable(tf.constant(0.1, shape=self.char_dim), name="b")
+            self.b = tf.Variable(tf.constant(0.1, shape=[self.char_dim]), name="b")
             self.conv = tf.nn.conv2d(
                         dropout_inputs,
                         self.W,
@@ -220,10 +208,9 @@ class Model(object):
         :param batch: list train/evaluate data 
         :return: structured data to feed
         """
-        _, chars, segs, tags = batch
+        _, chars, tags = batch
         feed_dict = {
             self.char_inputs: np.asarray(chars),
-            self.seg_inputs: np.asarray(segs),
             self.dropout: 1.0,
         }
         if is_train:

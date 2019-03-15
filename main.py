@@ -1,4 +1,4 @@
-# encoding=utf8
+
 import os
 import codecs
 import pickle
@@ -11,27 +11,26 @@ from model import Model
 from loader import load_sentences, update_tag_scheme
 from loader import char_mapping, tag_mapping
 from loader import augment_with_pretrained, prepare_dataset
-from utils import get_logger, make_path, clean, create_model, save_model
+from utils import get_logger, make_path, create_model, save_model
 from utils import print_config, save_config, load_config, test_ner
 from data_utils import load_word2vec, create_input, input_from_line, BatchManager
 
 flags = tf.app.flags
-flags.DEFINE_boolean("clean",       False,      "clean train folder")
 flags.DEFINE_boolean("train",       False,      "Wither train the model")
+
 # configurations for the model
-flags.DEFINE_integer("seg_dim",     0,         "Embedding size for segmentation, 0 if not used")
-flags.DEFINE_integer("char_dim",    150,        "Embedding size for characters")
-flags.DEFINE_integer("lstm_dim",    150,        "Num of hidden units in LSTM")
+flags.DEFINE_integer("char_dim",    100,        "Embedding size for characters")
+flags.DEFINE_integer("lstm_dim",    100,        "Num of hidden units in LSTM")
 flags.DEFINE_string("tag_schema",   "iobes",    "tagging schema iobes or iob")
 
 # configurations for training
 flags.DEFINE_float("clip",          5,          "Gradient clip")
 flags.DEFINE_float("dropout",       0.5,        "Dropout rate")
-flags.DEFINE_float("batch_size",    20,         "batch size")
+flags.DEFINE_integer("batch_size",  64,         "batch size")
 flags.DEFINE_float("lr",            0.001,      "Initial learning rate")
 flags.DEFINE_string("optimizer",    "adam",     "Optimizer for training")
-flags.DEFINE_boolean("pre_emb",     True,       "Wither use pre-trained embedding")
-flags.DEFINE_boolean("zeros",       False,      "Wither replace digits with zero")
+flags.DEFINE_boolean("pre_emb",     False,       "Wither use pre-trained embedding")
+flags.DEFINE_boolean("zeros",       True,      "Wither replace digits with zero")
 flags.DEFINE_boolean("lower",       True,       "Wither lower case")
 
 flags.DEFINE_integer("max_epoch",   100,        "maximum training epochs")
@@ -63,7 +62,6 @@ def config_model(char_to_id, tag_to_id):
     config["num_chars"] = len(char_to_id)
     config["char_dim"] = FLAGS.char_dim
     config["num_tags"] = len(tag_to_id)
-    config["seg_dim"] = FLAGS.seg_dim
     config["lstm_dim"] = FLAGS.lstm_dim
     config["batch_size"] = FLAGS.batch_size
 
@@ -136,14 +134,11 @@ def train():
 
     # prepare data, get a collection of list containing index
     train_data = prepare_dataset(
-        train_sentences, char_to_id, tag_to_id, FLAGS.lower, seg=FLAGS.seg_dim
-    )
+        train_sentences, char_to_id, tag_to_id, FLAGS.lower)
     dev_data = prepare_dataset(
-        dev_sentences, char_to_id, tag_to_id, FLAGS.lower, seg=FLAGS.seg_dim
-    )
+        dev_sentences, char_to_id, tag_to_id, FLAGS.lower)
     test_data = prepare_dataset(
-        test_sentences, char_to_id, tag_to_id, FLAGS.lower, seg=FLAGS.seg_dim
-    )
+        test_sentences, char_to_id, tag_to_id, FLAGS.lower)
     print("%i / %i / %i sentences in train / dev / test." % (
         len(train_data), 0, len(test_data)))
 
@@ -214,8 +209,6 @@ def evaluate_line():
 def main(_):
 
     if FLAGS.train:
-        if FLAGS.clean:
-            clean(FLAGS)
         train()
     else:
         evaluate_line()
