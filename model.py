@@ -31,7 +31,7 @@ class Model(object):
         # add placeholders for the model
 
         self.char_inputs = tf.placeholder(dtype=tf.int32,
-                                          shape=[None, None],
+                                          shape=[None, None, None],
                                           name="ChatInputs")
         self.seg_inputs = tf.placeholder(dtype=tf.int32,
                                          shape=[None, None],
