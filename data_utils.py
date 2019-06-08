@@ -5,6 +5,8 @@ import codecs
 import random
 import itertools
 import numpy as np
+import jieba
+jieba.initialize()
 
 
 def create_dico(item_list):
@@ -31,13 +33,6 @@ def create_mapping(dico):
     id_to_item = {i: v[0] for i, v in enumerate(sorted_items)}
     item_to_id = {v: k for k, v in id_to_item.items()}
     return item_to_id, id_to_item
-
-
-def zero_digits(s):
-    """
-    Replace every digit in a string by a zero.
-    """
-    return re.sub('\d', '0', s)
 
 
 def iob2(tags):
@@ -119,18 +114,6 @@ def insert_singletons(words, singletons, p=0.5):
         else:
             new_words.append(word)
     return new_words
-
-
-def create_input(data):
-    """
-    Take sentence data and return an input for
-    the training or the evaluation function.
-    """
-    inputs = list()
-    inputs.append(data['chars'])
-    inputs.append(data["segs"])
-    inputs.append(data['tags'])
-    return inputs
 
 
 def load_word2vec(emb_path, id_to_word, word_dim, old_weights):
@@ -248,13 +231,27 @@ def input_from_line(line, char_to_id):
     """
     line = full_to_half(line)
     line = replace_html(line)
-    inputs = list()
-    inputs.append([line])
-    line.replace(" ", "$")
-    inputs.append([[char_to_id[char] if char in char_to_id else char_to_id["<UNK>"]
-                   for char in line]])
-    inputs.append([[]])
-    return inputs
+    threshold = 6
+    words = []
+    chars = []
+    targets = []
+    word = [w for w in jieba.lcut(line)]
+    max_length = len(word)
+    char = [[char_to_id[c if c in char_to_id else '<UNK>'] for c in w]
+                for w in word]
+    padding = [0] * (max_length - len(word))
+    words.append(word + padding)
+    char = char + [[0]] * (max_length - len(word))
+    char_mask = [] 
+    for c in char:
+        if len(c) <= threshold:
+            b = c + [0] * (threshold - len(c))
+        else:
+            b = c[:threshold]
+        char_mask.append(b)
+    chars.append(char_mask)
+    targets.append([] + padding)
+    return [words, chars, targets]
 
 
 class BatchManager(object):
@@ -274,15 +271,15 @@ class BatchManager(object):
     @staticmethod
     def pad_data(data):
         threshold = 6
-        strings = []
+        words = []
         chars = []
         targets = []
         max_length = max([len(sentence[0]) for sentence in data])
         for line in data:
-            string, char, target = line
-            padding = [0] * (max_length - len(string))
-            strings.append(string + padding)
-            char = char + [[0]] * (max_length - len(string))
+            word, char, target = line
+            padding = [0] * (max_length - len(word))
+            words.append(word + padding)
+            char = char + [[0]] * (max_length - len(word))
             char_mask = [] 
             for c in char:
                 if len(c) <= threshold:
@@ -292,7 +289,7 @@ class BatchManager(object):
                 char_mask.append(b)
             chars.append(char_mask)
             targets.append(target + padding)
-        return [strings, chars, targets]
+        return [words, chars, targets]
 
     def iter_batch(self, shuffle=False):
         if shuffle:

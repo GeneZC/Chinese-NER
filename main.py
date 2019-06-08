@@ -13,10 +13,10 @@ from loader import char_mapping, tag_mapping
 from loader import augment_with_pretrained, prepare_dataset
 from utils import get_logger, make_path, create_model, save_model
 from utils import print_config, save_config, load_config, test_ner
-from data_utils import load_word2vec, create_input, input_from_line, BatchManager
+from data_utils import load_word2vec, input_from_line, BatchManager
 
 flags = tf.app.flags
-flags.DEFINE_boolean("train",       False,      "Wither train the model")
+flags.DEFINE_boolean("train",       False,      "Whether train the model")
 
 # configurations for the model
 flags.DEFINE_integer("char_dim",    100,        "Embedding size for characters")
@@ -29,9 +29,7 @@ flags.DEFINE_float("dropout",       0.5,        "Dropout rate")
 flags.DEFINE_integer("batch_size",  64,         "batch size")
 flags.DEFINE_float("lr",            0.001,      "Initial learning rate")
 flags.DEFINE_string("optimizer",    "adam",     "Optimizer for training")
-flags.DEFINE_boolean("pre_emb",     False,       "Wither use pre-trained embedding")
-flags.DEFINE_boolean("zeros",       True,      "Wither replace digits with zero")
-flags.DEFINE_boolean("lower",       True,       "Wither lower case")
+flags.DEFINE_boolean("pre_emb",     False,       "Whether use pre-trained embedding")
 
 flags.DEFINE_integer("max_epoch",   100,        "maximum training epochs")
 flags.DEFINE_integer("steps_check", 100,        "steps per checkpoint")
@@ -72,8 +70,6 @@ def config_model(char_to_id, tag_to_id):
     config["lr"] = FLAGS.lr
     config["tag_schema"] = FLAGS.tag_schema
     config["pre_emb"] = FLAGS.pre_emb
-    config["zeros"] = FLAGS.zeros
-    config["lower"] = FLAGS.lower
     return config
 
 
@@ -101,9 +97,9 @@ def evaluate(sess, model, name, data, id_to_tag, logger):
 
 def train():
     # load data sets
-    train_sentences = load_sentences(FLAGS.train_file, FLAGS.lower, FLAGS.zeros)
-    dev_sentences = load_sentences(FLAGS.dev_file, FLAGS.lower, FLAGS.zeros)
-    test_sentences = load_sentences(FLAGS.test_file, FLAGS.lower, FLAGS.zeros)
+    train_sentences = load_sentences(FLAGS.train_file)
+    dev_sentences = load_sentences(FLAGS.dev_file)
+    test_sentences = load_sentences(FLAGS.test_file)
 
     # Use selected tagging scheme (IOB / IOBES)
     update_tag_scheme(train_sentences, FLAGS.tag_schema)
@@ -113,16 +109,12 @@ def train():
     if not os.path.isfile(FLAGS.map_file):
         # create dictionary for word
         if FLAGS.pre_emb:
-            dico_chars_train = char_mapping(train_sentences, FLAGS.lower)[0]
+            dico_chars_train = char_mapping(train_sentences)[0]
             dico_chars, char_to_id, id_to_char = augment_with_pretrained(
                 dico_chars_train.copy(),
-                FLAGS.emb_file,
-                list(itertools.chain.from_iterable(
-                    [[w[0] for w in s] for s in test_sentences])
-                )
-            )
+                FLAGS.emb_file)
         else:
-            _c, char_to_id, id_to_char = char_mapping(train_sentences, FLAGS.lower)
+            _c, char_to_id, id_to_char = char_mapping(train_sentences)
 
         # Create a dictionary and a mapping for tags
         _t, tag_to_id, id_to_tag = tag_mapping(train_sentences)
@@ -134,11 +126,11 @@ def train():
 
     # prepare data, get a collection of list containing index
     train_data = prepare_dataset(
-        train_sentences, char_to_id, tag_to_id, FLAGS.lower)
+        train_sentences, char_to_id, tag_to_id)
     dev_data = prepare_dataset(
-        dev_sentences, char_to_id, tag_to_id, FLAGS.lower)
+        dev_sentences, char_to_id, tag_to_id)
     test_data = prepare_dataset(
-        test_sentences, char_to_id, tag_to_id, FLAGS.lower)
+        test_sentences, char_to_id, tag_to_id)
     print("%i / %i / %i sentences in train / dev / test." % (
         len(train_data), 0, len(test_data)))
 
@@ -201,9 +193,9 @@ def evaluate_line():
             # except Exception as e:
             #     logger.info(e)
 
-                line = input("请输入测试句子:")
-                result = model.evaluate_line(sess, input_from_line(line, char_to_id), id_to_tag)
-                print(result)
+            line = input("请输入测试句子:")
+            result = model.evaluate_line(sess, input_from_line(line, char_to_id), id_to_tag)
+            print(result)
 
 
 def main(_):

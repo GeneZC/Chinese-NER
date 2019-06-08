@@ -2,11 +2,11 @@ import os
 import re
 import codecs
 
-from data_utils import create_dico, create_mapping, zero_digits
+from data_utils import create_dico, create_mapping
 from data_utils import iob2, iob_iobes
 
 
-def load_sentences(path, lower, zeros):
+def load_sentences(path):
     """
     Load sentences. A line must contain at least a word and its tag.
     Sentences are separated by empty lines.
@@ -16,7 +16,7 @@ def load_sentences(path, lower, zeros):
     num = 0
     for line in codecs.open(path, 'r', 'utf8'):
         num += 1
-        line = zero_digits(line.rstrip()) if zeros else line.rstrip()
+        line = line.rstrip()
         if not line:
             if len(sentence) > 0:
                 sentences.append(sentence)
@@ -28,7 +28,7 @@ def load_sentences(path, lower, zeros):
                 # word[0] = " "
             else:
                 word = line.split()
-            assert len(word) >= 2, print([word[0]])
+            assert len(word) >= 2, print(word[0])
             sentence.append(word)
     if len(sentence) > 0:
         sentences.append(sentence)
@@ -59,7 +59,7 @@ def update_tag_scheme(sentences, tag_scheme):
             raise Exception('Unknown tagging scheme!')
 
 
-def char_mapping(sentences, lower):
+def char_mapping(sentences):
     """
     Create a dictionary and a mapping of characters, sorted by frequency.
     """
@@ -69,7 +69,7 @@ def char_mapping(sentences, lower):
         char = []
         for word in s:
             for c in word:
-                char.append(c.lower() if lower else c)
+                char.append(c)
         chars.append(char)
 
     dico = create_dico(chars)
@@ -102,28 +102,25 @@ def prepare_dataset(sentences, char_to_id, tag_to_id, lower=False, train=True, s
 
     none_index = tag_to_id["O"]
 
-    def f(x):
-        return x.lower() if lower else x
     data = []
     for s in sentences:
-        string = [w[0] for w in s]
-        chars = [[char_to_id[f(c) if f(c) in char_to_id else '<UNK>'] for c in w]
-                 for w in string]
+        words = [w[0] for w in s]
+        chars = [[char_to_id[c if c in char_to_id else '<UNK>'] for c in w]
+                 for w in words]
         if train:
             tags = [tag_to_id[w[-1]] for w in s]
         else:
             tags = [none_index for _ in s]
-        data.append([string, chars, tags])
+        data.append([words, chars, tags])
 
     return data
 
 
-def augment_with_pretrained(dictionary, ext_emb_path, chars=None):
+def augment_with_pretrained(dictionary, ext_emb_path):
     """
     Augment the dictionary with words that have a pretrained embedding.
     If `words` is None, we add every word that has a pretrained embedding
-    to the dictionary, otherwise, we only add the words that are given by
-    `words` (typically the words in the development and test sets.)
+    to the dictionary.
     """
     print('Loading pretrained embeddings from %s...' % ext_emb_path)
     assert os.path.isfile(ext_emb_path)
@@ -135,22 +132,10 @@ def augment_with_pretrained(dictionary, ext_emb_path, chars=None):
         if len(ext_emb_path) > 0
     ])
 
-    # We either add every word in the pretrained file,
-    # or only words given in the `words` list to which
-    # we can assign a pretrained embedding
-    if chars is None:
-        for char in pretrained:
-            if char not in dictionary:
-                dictionary[char] = 0
-    else:
-        for char in chars:
-            for c in char:
-                if any(x in pretrained for x in [
-                    c,
-                    c.lower(),
-                    re.sub('\d', '0', c.lower())
-                ]) and c not in dictionary:
-                    dictionary[c] = 0
+    
+    for char in pretrained:
+        if char not in dictionary:
+            dictionary[char] = 0
 
     char_to_id, id_to_char = create_mapping(dictionary)
     return dictionary, char_to_id, id_to_char
